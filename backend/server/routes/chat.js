@@ -12,26 +12,31 @@ const router = express.Router();
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
-const systemPrompt = `You are AI LegalGPT, an Indian legal assistant.
+const getSystemPrompt = (languageCode) => {
+  const isTamil = languageCode === 'ta';
+  const defaultLanguage = isTamil ? "Tamil" : "English";
+
+  return `You are AI LegalGPT, an Indian legal assistant.
 Answer legal questions clearly.
-If the user question is in Tamil, answer in Tamil.
-If the user question is in English, answer in English.
+IMPORTANT: You MUST answer strictly in the ${defaultLanguage} language, regardless of the language the user used to ask the question.
+HOWEVER, if the user specifically requests the answer in a different language within their question (e.g., "in Tamil", "in English"), you MUST prioritize their request and answer in the language they explicitly asked for.
 Do not mention datasets or training data.
 Provide simple explanations suitable for the general public.`;
+};
 
 // POST /api/chat
 router.post('/', async (req, res) => {
   try {
-    const { query } = req.body;
+    const { query, language } = req.body;
     
     if (!query) {
       return res.status(400).json({ error: 'Query is required' });
     }
     
-    console.log(`Processing AI LegalGPT request: ${query}`);
+    console.log(`Processing AI LegalGPT request: ${query} (Language: ${language})`);
     
     const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
-    const fullPrompt = `${systemPrompt}\n\nUser Question:\n${query}`;
+    const fullPrompt = `${getSystemPrompt(language)}\n\nUser Question:\n${query}`;
     
     const result = await model.generateContent(fullPrompt);
     const response = await result.response;
@@ -60,13 +65,13 @@ export const setupSocketHandlers = (io) => {
     console.log('Client connected:', socket.id);
     
     socket.on('chat:message', async (data) => {
-      const { query } = data;
+      const { query, language } = data;
       
       try {
         socket.emit('chat:typing', { isTyping: true });
         
         const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
-        const fullPrompt = `${systemPrompt}\n\nUser Question:\n${query}`;
+        const fullPrompt = `${getSystemPrompt(language)}\n\nUser Question:\n${query}`;
         
         const result = await model.generateContent(fullPrompt);
         const response = await result.response;

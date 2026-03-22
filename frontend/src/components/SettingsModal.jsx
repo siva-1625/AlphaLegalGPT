@@ -1,0 +1,176 @@
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { FiX, FiKey, FiSave, FiCheck, FiAlertCircle, FiCpu } from 'react-icons/fi';
+import { SiHuggingface, SiGoogle } from 'react-icons/si';
+
+const SettingsModal = ({ isOpen, onClose }) => {
+  const [settings, setSettings] = useState({
+    huggingfaceApiKey: '',
+    geminiApiKey: '',
+    togetherApiKey: '',
+  });
+  const [showKeys, setShowKeys] = useState({
+    huggingface: false,
+    gemini: false,
+    together: false,
+  });
+  const [saveStatus, setSaveStatus] = useState(null);
+
+  // Load settings from localStorage on mount
+  useEffect(() => {
+    const savedSettings = localStorage.getItem('apiSettings');
+    if (savedSettings) {
+      const parsed = JSON.parse(savedSettings);
+      setSettings({
+        huggingfaceApiKey: parsed.huggingfaceApiKey || '',
+        geminiApiKey: parsed.geminiApiKey || '',
+        togetherApiKey: parsed.togetherApiKey || '',
+      });
+    }
+  }, []);
+
+  // Handle input change
+  const handleChange = (field, value) => {
+    setSettings((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
+  };
+
+  // Toggle password visibility
+  const toggleShowKey = (field) => {
+    setShowKeys((prev) => ({
+      ...prev,
+      [field]: !prev[field],
+    }));
+  };
+
+  // Save settings to localStorage
+  const handleSave = () => {
+    try {
+      localStorage.setItem('apiSettings', JSON.stringify(settings));
+      setSaveStatus('success');
+      setTimeout(() => setSaveStatus(null), 2000);
+    } catch (error) {
+      setSaveStatus('error');
+      setTimeout(() => setSaveStatus(null), 2000);
+    }
+  };
+
+  // Clear all settings
+  const handleClear = () => {
+    if (window.confirm('Are you sure you want to clear all API keys?')) {
+      setSettings({
+        huggingfaceApiKey: '',
+        geminiApiKey: '',
+        togetherApiKey: '',
+      });
+      localStorage.removeItem('apiSettings');
+      setSaveStatus('success');
+      setTimeout(() => setSaveStatus(null), 2000);
+    }
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <AnimatePresence>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+        onClick={onClose}
+      >
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95, y: 20 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          exit={{ opacity: 0, scale: 0.95, y: 20 }}
+          transition={{ duration: 0.2 }}
+          className="bg-sidebar border border-border rounded-2xl w-full max-w-lg max-h-[90vh] overflow-hidden shadow-2xl"
+          onClick={(e) => e.stopPropagation()}
+        >
+          {/* Header */}
+          <div className="flex items-center justify-between px-6 py-4 border-b border-border">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-accent/20 flex items-center justify-center">
+                <FiKey className="w-5 h-5 text-accent" />
+              </div>
+              <div>
+                <h2 className="text-lg font-semibold text-text-primary">API Configuration</h2>
+                <p className="text-xs text-text-secondary">Configure your AI service API keys</p>
+              </div>
+            </div>
+            <button
+              onClick={onClose}
+              className="p-2 hover:bg-hover-bg rounded-lg transition-colors text-text-secondary hover:text-text-primary"
+            >
+              <FiX className="w-5 h-5" />
+            </button>
+          </div>
+
+          {/* Content */}
+          <div className="p-6 space-y-6 overflow-y-auto max-h-[calc(90vh-140px)]">
+            <div className="text-center py-12">
+              <FiSettings className="w-12 h-12 text-text-secondary mx-auto mb-4 opacity-20" />
+              <p className="text-text-secondary">General settings will appear here.</p>
+              <p className="text-xs text-text-secondary/50 mt-1">API configuration is handled by the server.</p>
+            </div>
+          </div>
+
+          {/* Footer */}
+          <div className="flex items-center justify-between px-6 py-4 border-t border-border bg-background/50">
+            <button
+              onClick={handleClear}
+              className="px-4 py-2 text-sm text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-lg transition-colors"
+            >
+              Clear All
+            </button>
+            
+            <div className="flex items-center gap-3">
+              {saveStatus === 'success' && (
+                <motion.span
+                  initial={{ opacity: 0, x: 10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  className="flex items-center gap-1 text-sm text-green-400"
+                >
+                  <FiCheck className="w-4 h-4" />
+                  Saved!
+                </motion.span>
+              )}
+              {saveStatus === 'error' && (
+                <motion.span
+                  initial={{ opacity: 0, x: 10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  className="flex items-center gap-1 text-sm text-red-400"
+                >
+                  <FiAlertCircle className="w-4 h-4" />
+                  Error saving
+                </motion.span>
+              )}
+              
+              <button
+                onClick={onClose}
+                className="px-4 py-2 text-sm text-text-secondary hover:text-text-primary bg-hover-bg hover:bg-border rounded-lg transition-colors"
+              >
+                Cancel
+              </button>
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={handleSave}
+                className="flex items-center gap-2 px-4 py-2 text-sm bg-accent hover:bg-accent-hover text-white rounded-lg transition-colors"
+              >
+                <FiSave className="w-4 h-4" />
+                Save Changes
+              </motion.button>
+            </div>
+          </div>
+        </motion.div>
+      </motion.div>
+    </AnimatePresence>
+  );
+};
+
+export default SettingsModal;
+

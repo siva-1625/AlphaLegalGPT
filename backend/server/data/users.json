@@ -1,0 +1,60 @@
+[
+  {
+    "_id": "x5igy3aeg",
+    "name": "Admin User",
+    "email": "admin@alphalegal.com",
+    "password": "$2a$10$v7SAm16aSuzvNzYfMwCIHus51vZX2h6VU.B6WKDiqu.uJnRjECfpK",
+    "isVerified": true,
+    "otp": null,
+    "otpExpiry": null,
+    "createdAt": "2026-03-16T12:41:42.479Z"
+  },
+  {
+    "_id": "gl47j9sdu",
+    "name": "Srimathi S",
+    "email": "srimathisubramaniyan79@gmail.com",
+    "password": "$2a$10$M.tr0yF5488cRgIef9ia7u4H35LO6Y2UK8YJ28hYEL14C.8pKXNYy",
+    "isVerified": true,
+    "createdAt": "2026-03-16T12:49:37.015Z"
+  },
+  {
+    "_id": "5vg2r6068",
+    "name": "sivaguru",
+    "email": "selvaguruselvaguru90@gmail.com",
+    "password": "$2a$10$B5vB36jFG6Y6ThS5P2QjS.Lo0lREsGBALA8A0.IzSxsBvpFDO92n6",
+    "isVerified": true,
+    "createdAt": "2026-03-16T13:01:50.712Z"
+  },
+  {
+    "_id": "h96g62563",
+    "name": "Yogesh",
+    "email": "balamurugan197306@gmail.com",
+    "password": "$2a$10$SH24EUf6YeudL3AUBWOGsOi0ShSa7s6Zght4kRLCtPQn2UAG7yLyy",
+    "isVerified": true,
+    "createdAt": "2026-03-17T04:55:25.895Z"
+  },
+  {
+    "_id": "t2y5sg7yk",
+    "name": "Tamizhmani",
+    "email": "manikthamizh@gmail.com",
+    "password": "$2a$10$yyrHTJZl0tC2.CWfZQLqk.8P0DyiiMzQh6hoCMRyyQjS0.IUiJiJC",
+    "isVerified": true,
+    "createdAt": "2026-03-17T08:52:07.850Z"
+  },
+  {
+    "_id": "ut4qfxa3v",
+    "name": "Nifraz Khan",
+    "email": "nifrazkhan93@gmail.com",
+    "password": "$2a$10$bS4Jj0j4MlN.2KyJjIbUuelRlwYHQcusErp4o3lXPqNyC2/7hjUrG",
+    "isVerified": true,
+    "createdAt": "2026-03-18T08:48:10.639Z"
+  },
+  {
+    "_id": "des3tcef7",
+    "name": "Suresh",
+    "email": "suresh23112004@gmail.com",
+    "password": "$2a$10$IuoAbYEU9aSDqt/BrEgKH.jAfsuJcmfc8tEMe4CDjLh2K7uS2nYBu",
+    "isVerified": true,
+    "createdAt": "2026-03-22T01:42:48.334Z"
+  }
+]

@@ -28,6 +28,8 @@ function MainApp() {
     switchChat,
     deleteChat,
     sendMessage,
+    clearChat,
+    clearAllHistory,
   } = useChat();
 
   // Check backend health on mount
@@ -87,6 +89,7 @@ function MainApp() {
         language={language}
         onLanguageChange={handleLanguageChange}
         onSettingsClick={() => setIsSettingsOpen(true)}
+        onClearAllHistory={clearAllHistory}
       />
 
       {/* Main Content */}

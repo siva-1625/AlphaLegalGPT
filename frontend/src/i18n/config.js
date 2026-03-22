@@ -41,6 +41,8 @@ const resources = {
       settings: 'Settings',
       logout: 'Logout',
       noChats: 'No previous chats',
+      clearAllHistory: 'Clear All History',
+      confirmClearAll: 'Are you sure you want to clear all chat history? This cannot be undone.',
       
       // Chat
       basedOnIPC: 'Based on IPC',
@@ -126,6 +128,8 @@ const resources = {
       settings: 'அமைப்புகள்',
       logout: 'வெளியேறு',
       noChats: 'முந்தைய உரையாடல்கள் இல்லை',
+      clearAllHistory: 'அனைத்து வரலாற்றையும் அழி',
+      confirmClearAll: 'அனைத்து உரையாடல் வரலாற்றையும் அழிக்க வேண்டுமா? இதைத் தவிர்க்க முடியாது.',
       
       // Chat
       basedOnIPC: 'IPC அடிப்படையில்',

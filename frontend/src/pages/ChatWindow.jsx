@@ -70,12 +70,14 @@ const WelcomeScreen = ({ onExampleClick }) => {
           {randomExamples.map((example, index) => (
             <motion.button
               key={index}
-              whileHover={{ scale: 1.02, backgroundColor: 'rgba(45, 45, 45, 0.8)' }}
+              whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               onClick={() => onExampleClick(example)}
-              className="text-left p-4 bg-ai-message hover:bg-hover-bg rounded-xl border border-border transition-colors"
+              className="text-left p-4 bg-ai-message hover:bg-accent hover:text-white group rounded-xl border border-border transition-all duration-200"
             >
-              <span className="text-text-primary">{example}</span>
+              <span className="text-text-primary group-hover:text-white transition-colors">
+                {example}
+              </span>
             </motion.button>
           ))}
         </div>

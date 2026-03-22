@@ -184,20 +184,36 @@ export const useChat = () => {
   /**
    * Delete chat
    */
-  const deleteChat = useCallback((chatId) => {
-    setChats(prev => {
-      const updated = prev.filter(c => c.id !== chatId);
-      saveChats(updated);
-      return updated;
-    });
-    
-    if (currentChatId === chatId) {
-      const remaining = chats.filter(c => c.id !== chatId);
-      if (remaining.length > 0) {
-        switchChat(remaining[0].id);
+  const deleteChat = useCallback(async (chatId) => {
+    try {
+      // Call backend to delete
+      const response = await fetch(`/api/chat/history/${chatId}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${sessionStorage.getItem('authToken')}`
+        }
+      });
+
+      if (response.ok) {
+        setChats(prev => {
+          const updated = prev.filter(c => c.id !== chatId);
+          saveChats(updated);
+          return updated;
+        });
+        
+        if (currentChatId === chatId) {
+          const remaining = chats.filter(c => c.id !== chatId);
+          if (remaining.length > 0) {
+            switchChat(remaining[0].id);
+          } else {
+            createNewChat();
+          }
+        }
       } else {
-        createNewChat();
+        console.error('Failed to delete chat from backend');
       }
+    } catch (error) {
+      console.error('Error deleting chat:', error);
     }
   }, [chats, currentChatId, switchChat, createNewChat, saveChats]);
   
@@ -376,6 +392,30 @@ socket.emit('chat:message', {
       return updated;
     });
   }, [currentChatId, saveChats]);
+
+  /**
+   * Clear all history from backend and local
+   */
+  const clearAllHistory = useCallback(async () => {
+    try {
+      const response = await fetch('/api/chat/clear-all', {
+        headers: {
+          'Authorization': `Bearer ${sessionStorage.getItem('authToken')}`
+        }
+      });
+      
+      if (response.ok) {
+        setChats([]);
+        setMessages([]);
+        setCurrentChatId(null);
+        localStorage.removeItem(STORAGE_KEY);
+        localStorage.removeItem(CURRENT_CHAT_KEY);
+        createNewChat();
+      }
+    } catch (error) {
+      console.error('Error clearing all history:', error);
+    }
+  }, [STORAGE_KEY, CURRENT_CHAT_KEY, createNewChat]);
   
   return {
     messages,
@@ -390,6 +430,7 @@ socket.emit('chat:message', {
     deleteChat,
     sendMessage,
     clearChat,
+    clearAllHistory,
   };
 };
 

@@ -100,6 +100,25 @@ export class User {
     return true;
   }
 
+  static async resetPasswordWithOTP(email, otp, newPassword) {
+    const users = await readUsers();
+    const index = users.findIndex(u => u.email === email);
+    
+    // verify OTP synchronously in the same state
+    if (index === -1 || users[index].otp !== otp || Date.now() > users[index].otpExpiry) {
+      return { success: false, error: 'Invalid or expired OTP' };
+    }
+
+    // reset password
+    users[index].password = await bcrypt.hash(newPassword, 10);
+    users[index].isVerified = true;
+    users[index].otp = undefined;
+    users[index].otpExpiry = undefined;
+    
+    await writeUsers(users);
+    return { success: true };
+  }
+
   static async comparePassword(password, hashed) {
     return bcrypt.compare(password, hashed);
   }

@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate, Link } from 'react-router-dom';
 import { FiMail, FiLock, FiEye, FiEyeOff, FiLoader } from 'react-icons/fi';
 import { useAuth } from '../contexts/AuthContext';
+import ForgotPasswordModal from './ForgotPasswordModal';
 
 const Login = () => {
   const { t } = useTranslation();
@@ -12,6 +13,7 @@ const Login = () => {
   const [otpData, setOtpData] = useState(['','','','','','']);
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [showPassword, setShowPassword] = useState(false);
+  const [isForgotModalOpen, setIsForgotModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -149,6 +151,16 @@ const Login = () => {
                   {showPassword ? <FiEyeOff className="w-5 h-5" /> : <FiEye className="w-5 h-5" />}
                 </button>
               </motion.div>
+              
+              <div className="flex justify-end mt-2">
+                <button
+                  type="button"
+                  onClick={() => setIsForgotModalOpen(true)}
+                  className="text-sm font-medium text-accent hover:text-accent/80 transition-colors"
+                >
+                  {t('forgotPassword') || 'Forgot Password?'}
+                </button>
+              </div>
             </div>
 
             <motion.button
@@ -180,6 +192,11 @@ const Login = () => {
           </div>
         </motion.div>
       </motion.div>
+
+      <ForgotPasswordModal 
+        isOpen={isForgotModalOpen} 
+        onClose={() => setIsForgotModalOpen(false)} 
+      />
     </div>
   );
 };

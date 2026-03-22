@@ -18,21 +18,39 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Force login on every app open by clearing any persisted auth
-    localStorage.removeItem('authToken');
-    localStorage.removeItem('token');
-    setUser(null);
-    setToken(null);
-    setIsAuthenticated(false);
+    // Check session storage to strictly persist only per-tab session
+    const storedToken = sessionStorage.getItem('authToken');
+    const storedUser = sessionStorage.getItem('user');
+
+    if (storedToken && storedUser) {
+      setToken(storedToken);
+      try {
+        setUser(JSON.parse(storedUser));
+      } catch (e) {
+        setUser({ email: storedUser });
+      }
+      setIsAuthenticated(true);
+    } else {
+      // Force logout if invalid, and ensure standard dark theme for Login page
+      sessionStorage.removeItem('authToken');
+      sessionStorage.removeItem('token');
+      sessionStorage.removeItem('user');
+      setUser(null);
+      setToken(null);
+      setIsAuthenticated(false);
+      document.documentElement.classList.add('dark');
+    }
     setLoading(false);
   }, []);
 
   const login = async (email, password) => {
     try {
-      const { token } = await loginUser(email, password);
-      localStorage.setItem('authToken', token);
+      const { token, user: userData } = await loginUser(email, password);
+      const finalUser = userData || { email };
+      sessionStorage.setItem('authToken', token);
+      sessionStorage.setItem('user', JSON.stringify(finalUser));
       setToken(token);
-      setUser({ email });
+      setUser(finalUser);
       setIsAuthenticated(true);
       return { success: true };
     } catch (error) {
@@ -51,10 +69,12 @@ export const AuthProvider = ({ children }) => {
 
   const verifyOTP = async (email, otp) => {
     try {
-      const { token } = await verifyOTPApi(email, otp);
-      localStorage.setItem('authToken', token);
+      const { token, user: userData } = await verifyOTPApi(email, otp);
+      const finalUser = userData || { email };
+      sessionStorage.setItem('authToken', token);
+      sessionStorage.setItem('user', JSON.stringify(finalUser));
       setToken(token);
-      setUser({ email });
+      setUser(finalUser);
       setIsAuthenticated(true);
       return { success: true };
     } catch (error) {
@@ -73,10 +93,14 @@ export const AuthProvider = ({ children }) => {
 
 
   const logout = () => {
-    localStorage.removeItem('authToken');
+    sessionStorage.removeItem('authToken');
+    sessionStorage.removeItem('token');
+    sessionStorage.removeItem('user');
     setUser(null);
     setToken(null);
     setIsAuthenticated(false);
+    // Force standard dark theme for unauthenticated views (Login/Signup)
+    document.documentElement.classList.add('dark');
   };
 
   const value = {

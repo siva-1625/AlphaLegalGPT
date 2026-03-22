@@ -33,18 +33,27 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-const sendOTP = async (email, otp) => {
+const sendOTP = async (email, otp, context = 'signup') => {
   console.log(`📧 Attempting to send OTP ${otp} to ${email}`);
   try {
+    const isReset = context === 'reset';
+    const subject = isReset 
+      ? "Your Password Reset Code" 
+      : "Your Signup Verification Code";
+      
+    const textContext = isReset 
+      ? "Your OTP to reset your AlphaLegalGPT password is:" 
+      : "Your OTP for AlphaLegalGPT signup is:";
+
     let info = await transporter.sendMail({
       from: `"AlphaLegalGPT Assistant" <${process.env.EMAIL_USER}>`,
       to: email, // list of receivers
-      subject: "Your Signup Verification Code", // Subject line
-      text: `Your OTP for AlphaLegalGPT signup is: ${otp}\n\nThis OTP is valid for 10 minutes. Please do not share this code with anyone.`, // plain text body
+      subject: subject, // Subject line
+      text: `${textContext} ${otp}\n\nThis OTP is valid for 10 minutes. Please do not share this code with anyone.`, // plain text body
       html: `
         <div style="font-family: Arial, sans-serif; padding: 20px; color: #333;">
           <h2 style="color: #2563eb;">AlphaLegalGPT Verification</h2>
-          <p>Thank you for signing up!</p>
+          <p>${isReset ? 'You requested a password reset.' : 'Thank you for signing up!'}</p>
           <p>Your one-time password (OTP) is:</p>
           <div style="background-color: #f3f4f6; padding: 10px 20px; font-size: 24px; font-weight: bold; letter-spacing: 5px; display: inline-block; border-radius: 5px; margin: 10px 0;">
             ${otp}
@@ -199,6 +208,68 @@ router.post('/resend-otp', async (req, res) => {
   } catch (error) {
     console.error('Resend OTP error:', error);
     res.status(500).json({ error: 'Server error' });
+  }
+});
+
+// Forgot Password schemas
+const forgotSchema = Joi.object({
+  email: Joi.string().email().required()
+});
+
+const resetSchema = Joi.object({
+  email: Joi.string().email().required(),
+  otp: Joi.string().length(6).required(),
+  newPassword: Joi.string().min(6).required()
+});
+
+// POST /forgot-password
+router.post('/forgot-password', async (req, res) => {
+  const { error, value } = forgotSchema.validate(req.body);
+  if (error) {
+    return res.status(400).json({ error: error.details[0].message });
+  }
+
+  try {
+    const { email } = value;
+    const user = await User.findByEmail(email);
+
+    if (!user) {
+      // Return success even if user doesn't exist to prevent email enumeration
+      return res.json({ message: 'If an account exists, a reset OTP has been sent.' });
+    }
+
+    const otp = generateOTP();
+    const expiry = Date.now() + 10 * 60 * 1000;
+    await User.updateOTP(email, otp, expiry);
+    
+    await sendOTP(email, otp, 'reset');
+    res.json({ message: 'OTP sent successfully for password reset.' });
+  } catch (error) {
+    console.error('Forgot password error:', error);
+    res.status(500).json({ error: 'Server error while generating OTP' });
+  }
+});
+
+// POST /reset-password
+router.post('/reset-password', async (req, res) => {
+  const { error, value } = resetSchema.validate(req.body);
+  if (error) {
+    return res.status(400).json({ error: error.details[0].message });
+  }
+
+  try {
+    const { email, otp, newPassword } = value;
+
+    // Atomically Verify OTP and Update Password
+    const result = await User.resetPasswordWithOTP(email, otp, newPassword);
+    if (!result.success) {
+      return res.status(400).json({ error: result.error });
+    }
+
+    res.json({ message: 'Password has been successfully reset!' });
+  } catch (error) {
+    console.error('Reset password error:', error);
+    res.status(500).json({ error: 'Server error during password reset' });
   }
 });
 

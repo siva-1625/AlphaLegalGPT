@@ -1,5 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 export default {
+  darkMode: 'class',
   content: [
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
@@ -7,17 +8,17 @@ export default {
   theme: {
     extend: {
       colors: {
-        background: '#0f0f0f',
-        sidebar: '#171717',
-        border: '#2a2a2a',
-        'ai-message': '#1a1a1a',
-        'user-message': '#2d2d2d',
-        accent: '#10a37f',
-        'accent-hover': '#0e8c6d',
-        'text-primary': '#ffffff',
-        'text-secondary': '#8e8e8e',
-        'input-bg': '#1a1a1a',
-        'hover-bg': '#2a2a2a',
+        background: 'var(--color-background)',
+        sidebar: 'var(--color-sidebar)',
+        border: 'var(--color-border)',
+        'ai-message': 'var(--color-ai-message)',
+        'user-message': 'var(--color-user-message)',
+        accent: 'var(--color-accent)',
+        'accent-hover': 'var(--color-accent-hover)',
+        'text-primary': 'var(--color-text-primary)',
+        'text-secondary': 'var(--color-text-secondary)',
+        'input-bg': 'var(--color-input-bg)',
+        'hover-bg': 'var(--color-hover-bg)',
       },
       fontFamily: {
         sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],

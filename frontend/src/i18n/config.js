@@ -59,12 +59,22 @@ const resources = {
       
       // Welcome
       welcomeTitle: 'Welcome to AlphaLegalGPT',
-      welcomeMessage: 'Your AI-powered legal assistant for Indian Penal Code queries. Ask me anything about IPC sections, criminal law, or legal procedures.',
-      exampleQuestions: 'Example questions:',
-      example1: 'What is IPC Section 420?',
-      example2: 'What are the punishments for theft?',
-      example3: 'Explain Section 498A',
-      example4: 'What does the law say about assault?',
+      welcomeMessage: 'Your comprehensive AI legal assistant. I am equipped to guide you through the intricacies of Indian Law, including the Constitution, civil procedures, penal codes, corporate law, legal drafting, and case analysis.',
+      exampleQuestionsText: 'Example questions:',
+      examples: [
+        'What is IPC Section 420?',
+        'What are the punishments for theft?',
+        'Explain Section 498A.',
+        'What does the law say about assault?',
+        'What is the punishment for cyberbullying?',
+        'How to file a domestic violence case?',
+        'What is the legal process for divorce in India?',
+        'Explain the Right to Information (RTI) Act.',
+        'What are the rights of an arrested person?',
+        'What constitutes criminal intimidation under IPC 503?',
+        'What is the legal procedure for defamation?',
+        'What are the child custody laws in India?'
+      ],
       
       // Errors
       errorOccurred: 'An error occurred',
@@ -134,12 +144,22 @@ const resources = {
       
       // Welcome
       welcomeTitle: 'அல்பாஎல்கல்ஜிபிடி-க்கு வரவேற்கிறோம்',
-      welcomeMessage: 'இந்திய தண்டனைச் சட்டத்திற்கான உங்கள் AI-ஆற்றல் சட்ட உதவியாளர். IPC பிரிவுகள், குற்றவியல் சட்டம் அல்லது சட்ட நடைமுறைகள் பற்றி என்னிடம் கேளுங்கள்.',
-      exampleQuestions: 'உதாரணமான கேள்விகள்:',
-      example1: 'IPC பிரிவு 420 என்றால் என்ன?',
-      example2: 'திருட்டுக்கு தண்டனைகள் எவை?',
-      example3: 'பிரிவு 498A-ஐ விளக்குங்கள்',
-      example4: 'தாக்குதல் பற்றி சட்டம் என்ன கூறுகிறது?',
+      welcomeMessage: 'உங்களது விரிவான AI சட்ட உதவியாளர். இந்திய அரசியலமைப்பு, சிவில் நடைமுறைகள், தண்டனைச் சட்டங்கள், கார்ப்பரேட் சட்டம், சட்ட வரைவுகள் மற்றும் வழக்கு பகுப்பாய்வு உள்ளிட்ட இந்திய சட்டத்தின் நுணுக்கங்களை உங்களுக்கு வழிகாட்ட நான் தயாராக உள்ளேன்.',
+      exampleQuestionsText: 'உதாரணமான கேள்விகள்:',
+      examples: [
+        'IPC பிரிவு 420 என்றால் என்ன?',
+        'திருட்டுக்கு தண்டனைகள் எவை?',
+        'பிரிவு 498A-ஐ விளக்குங்கள்.',
+        'தாக்குதல் பற்றி சட்டம் என்ன கூறுகிறது?',
+        'இணைய அச்சுறுத்தலுக்கான தண்டனை என்ன?',
+        'குடும்ப வன்முறை வழக்கை எவ்வாறு பதிவு செய்வது?',
+        'இந்தியாவில் விவாகரத்துக்கான சட்ட நடைமுறை என்ன?',
+        'தகவல் அறியும் உரிமைச் சட்டம் (RTI) விளக்குங்கள்.',
+        'கைது செய்யப்பட்ட நபரின் உரிமைகள் என்ன?',
+        'IPC 503-இன் கீழ் குற்றவியல் மிரட்டல் என்றால் என்ன?',
+        'அவதூறு வழக்குக்கான சட்ட நடைமுறை என்ன?',
+        'இந்தியாவில் குழந்தை காப்பகச் சட்டங்கள் என்ன?'
+      ],
       
       // Errors
       errorOccurred: 'பிழை ஏற்பட்டது',

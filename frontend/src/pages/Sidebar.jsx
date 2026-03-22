@@ -1,5 +1,5 @@
-import React from 'react';
-import { motion } from 'framer-motion';
+import React, { useState, useEffect, useRef } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { 
   FiPlus, 
@@ -24,7 +24,21 @@ const Sidebar = ({
   onSettingsClick 
 }) => {
   const { t } = useTranslation();
-  const { logout } = useAuth();
+  const { user, logout } = useAuth();
+  
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const menuRef = useRef(null);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setIsUserMenuOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const languages = [
     { code: 'en', name: 'English', flag: '🇬🇧' },
@@ -110,7 +124,7 @@ const Sidebar = ({
       </div>
 
       {/* Footer */}
-      <div className="p-3 border-t border-border">
+      <div className="p-3 border-t border-border relative" ref={menuRef}>
         {/* Language Toggle */}
         <div className="flex items-center justify-between px-3 py-2 mb-2">
           <div className="flex items-center gap-2 text-text-secondary">
@@ -134,31 +148,69 @@ const Sidebar = ({
           </div>
         </div>
 
-        {/* Settings */}
-        <button 
-          onClick={onSettingsClick}
-          className="w-full flex items-center gap-3 px-3 py-2.5 hover:bg-hover-bg rounded-lg transition-colors text-text-secondary hover:text-text-primary"
-        >
-          <FiSettings className="w-5 h-5" />
-          <span className="text-sm">{t('settings')}</span>
-        </button>
+        {/* User Dropdown Menu */}
+        <AnimatePresence>
+          {isUserMenuOpen && (
+            <motion.div
+              initial={{ opacity: 0, y: 10, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 10, scale: 0.95 }}
+              transition={{ duration: 0.15 }}
+              className="absolute bottom-16 left-3 right-3 bg-sidebar border border-border shadow-2xl rounded-xl overflow-hidden z-50 flex flex-col"
+            >
+              {/* User Details */}
+              <div className="px-4 py-3 border-b border-border bg-hover-bg/50">
+                <p className="text-sm font-semibold text-text-primary capitalize truncate">
+                  {user?.name || "Alpha User"}
+                </p>
+                <p className="text-xs text-text-secondary truncate mt-0.5">
+                  {user?.email || "user@alphalegal.com"}
+                </p>
+              </div>
 
-        {/* Logout */}
-        <button 
-          onClick={logout}
-          className="w-full flex items-center gap-3 px-3 py-2.5 hover:bg-hover-bg rounded-lg transition-colors text-red-400 hover:text-red-300"
-        >
-          <FiLogOut className="w-5 h-5" />
-          <span className="text-sm">{t('logout')}</span>
-        </button>
+              {/* Balance Placeholder removed per user request */}
 
-        {/* User */}
-        <div className="w-full flex items-center gap-3 px-3 py-2.5 text-text-secondary opacity-70">
-          <div className="w-8 h-8 rounded-full bg-accent/20 flex items-center justify-center">
-            <FiUser className="w-4 h-4 text-accent" />
+              {/* Action Buttons */}
+              <div className="p-1.5 flex flex-col">
+                <button 
+                  onClick={() => {
+                    setIsUserMenuOpen(false);
+                    onSettingsClick();
+                  }}
+                  className="w-full flex items-center gap-3 px-3 py-2.5 hover:bg-hover-bg rounded-lg transition-colors text-text-secondary hover:text-text-primary text-sm"
+                >
+                  <FiSettings className="w-4 h-4 flex-shrink-0" />
+                  <span>{t('settings')}</span>
+                </button>
+                <button 
+                  onClick={logout}
+                  className="w-full flex items-center gap-3 px-3 py-2.5 hover:bg-hover-bg rounded-lg transition-colors text-red-500 hover:text-red-400 text-sm"
+                >
+                  <FiLogOut className="w-4 h-4 flex-shrink-0" />
+                  <span>{t('logout')}</span>
+                </button>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* User Trigger Button */}
+        <button 
+          onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+          className={`w-full flex items-center justify-between gap-3 px-3 py-2.5 rounded-lg transition-colors ${
+            isUserMenuOpen ? 'bg-hover-bg text-text-primary' : 'text-text-secondary hover:bg-hover-bg hover:text-text-primary'
+          }`}
+        >
+          <div className="flex items-center gap-3 truncate">
+            <div className="w-8 h-8 rounded-full bg-accent/20 flex items-center justify-center flex-shrink-0">
+              <FiUser className="w-4 h-4 text-accent" />
+            </div>
+            <span className="text-sm font-medium truncate capitalize">{user?.name || "User"}</span>
           </div>
-          <span className="text-sm">User</span>
-        </div>
+          <svg className={`w-4 h-4 flex-shrink-0 text-text-secondary transition-transform ${isUserMenuOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+          </svg>
+        </button>
       </div>
     </motion.aside>
   );

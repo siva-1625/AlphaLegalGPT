@@ -264,6 +264,42 @@ export const resendOTP = async (email) => {
   }
 };
 
+export const forgotPassword = async (email) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/auth/forgot-password`, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ email }),
+    });
+    if (!response.ok) {
+      const errData = await response.json().catch(() => ({}));
+      throw new Error(errData.error || 'Failed to request password reset');
+    }
+    return await response.json();
+  } catch (error) {
+    console.error('Forgot Password error:', error);
+    throw error;
+  }
+};
+
+export const resetPassword = async (email, otp, newPassword) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/auth/reset-password`, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ email, otp, newPassword }),
+    });
+    if (!response.ok) {
+      const errData = await response.json().catch(() => ({}));
+      throw new Error(errData.error || 'Failed to reset password');
+    }
+    return await response.json();
+  } catch (error) {
+    console.error('Reset Password error:', error);
+    throw error;
+  }
+};
+
 /**
  * Check API health
  */

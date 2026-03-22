@@ -1,6 +1,6 @@
 import express from 'express';
 import dotenv from 'dotenv';
-import OpenAI from 'openai';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 
@@ -10,9 +10,7 @@ dotenv.config({ path: join(__dirname, '../../.env') });
 
 const router = express.Router();
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 const systemPrompt = `You are AI LegalGPT, an Indian legal assistant.
 Answer legal questions clearly.
@@ -32,17 +30,12 @@ router.post('/', async (req, res) => {
     
     console.log(`Processing AI LegalGPT request: ${query}`);
     
-    const response = await openai.chat.completions.create({
-      model: "gpt-3.5-turbo", // or gpt-4
-      messages: [
-        { role: "system", content: systemPrompt },
-        { role: "user", content: query }
-      ],
-      temperature: 0.7,
-      max_tokens: 1000,
-    });
-
-    const answer = response.choices[0].message.content;
+    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+    const fullPrompt = `${systemPrompt}\n\nUser Question:\n${query}`;
+    
+    const result = await model.generateContent(fullPrompt);
+    const response = await result.response;
+    const answer = response.text();
 
     res.json({
       answer,
@@ -72,15 +65,12 @@ export const setupSocketHandlers = (io) => {
       try {
         socket.emit('chat:typing', { isTyping: true });
         
-        const response = await openai.chat.completions.create({
-          model: "gpt-3.5-turbo",
-          messages: [
-            { role: "system", content: systemPrompt },
-            { role: "user", content: query }
-          ],
-        });
-
-        const answer = response.choices[0].message.content;
+        const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+        const fullPrompt = `${systemPrompt}\n\nUser Question:\n${query}`;
+        
+        const result = await model.generateContent(fullPrompt);
+        const response = await result.response;
+        const answer = response.text();
         
         socket.emit('chat:complete', {
           answer,

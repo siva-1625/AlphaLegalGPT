@@ -83,7 +83,7 @@ app.get('/api/health', (req, res) => {
   res.json({ 
     status: 'ok', 
     timestamp: new Date().toISOString(),
-    service: 'AI LegalGPT Assistant (OpenAI)'
+    service: 'AI LegalGPT Assistant (Gemini)'
   });
 });
 
@@ -93,7 +93,7 @@ setupSocketHandlers(io);
 // Initialize application
 const initializeApp = async () => {
   try {
-    console.log('Starting AI LegalGPT Backend (OpenAI)...');
+    console.log('Starting AI LegalGPT Backend (Gemini)...');
     console.log('Using local file storage for users.');
 
     // Seed default admin user if not exists
@@ -126,7 +126,7 @@ const initializeApp = async () => {
   ║  Server: http://localhost:${PORT}                    ║
   ║  API:     http://localhost:${PORT}/api               ║
   ║  Frontend: ${process.env.FRONTEND_URL}                ║
-  ║  LLM:     OpenAI                                  ║
+  ║  LLM:     Gemini                                  ║
   ║  WebSocket: Enabled                               ║
   ║  Database: Local JSON (Temporary)                 ║
   ╚═══════════════════════════════════════════════════╝

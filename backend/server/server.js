@@ -12,6 +12,7 @@ import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import chatRoutes, { setupSocketHandlers } from './routes/chat.js';
 import authRoutes from './routes/auth.js';
+import uploadRoutes from './routes/upload.js';
 import { User } from './models/User.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -77,6 +78,7 @@ const authMiddleware = (req, res, next) => {
 // API Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/chat', authMiddleware, chatRoutes);
+app.use('/api/upload', authMiddleware, uploadRoutes);
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {

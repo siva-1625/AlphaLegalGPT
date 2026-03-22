@@ -277,3 +277,34 @@ export const checkHealth = async () => {
   }
 };
 
+/**
+ * Upload Document
+ */
+export const uploadDocument = async (file) => {
+  try {
+    const formData = new FormData();
+    formData.append('document', file);
+    
+    const headers = {};
+    const token = getStoredToken();
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+    
+    const response = await fetch(`${API_BASE_URL}/upload`, {
+      method: 'POST',
+      headers,
+      body: formData,
+    });
+    
+    if (!response.ok) {
+      const errData = await response.json().catch(() => ({}));
+      throw new Error(errData.error || 'Document upload failed');
+    }
+    return await response.json();
+  } catch (error) {
+    console.error('Upload document error:', error);
+    throw error;
+  }
+};
+

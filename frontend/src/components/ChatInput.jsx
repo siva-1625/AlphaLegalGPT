@@ -7,10 +7,16 @@ import {
   FiFile, 
   FiX 
 } from 'react-icons/fi';
+import { uploadDocument } from '../services/api';
 
 const ChatInput = ({ value: message, onChange: setMessage, onSendMessage, isLoading, disabled }) => {
   const { t } = useTranslation();
   const textareaRef = useRef(null);
+  const fileInputRef = useRef(null);
+  const recognitionRef = useRef(null);
+  
+  const [isRecording, setIsRecording] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
 
   // Auto-resize textarea
   useEffect(() => {
@@ -19,6 +25,75 @@ const ChatInput = ({ value: message, onChange: setMessage, onSendMessage, isLoad
       textareaRef.current.style.height = Math.min(textareaRef.current.scrollHeight, 200) + 'px';
     }
   }, [message]);
+
+  // Initialize SpeechRecognition
+  useEffect(() => {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (SpeechRecognition) {
+      recognitionRef.current = new SpeechRecognition();
+      recognitionRef.current.continuous = false;
+      recognitionRef.current.interimResults = false;
+      
+      recognitionRef.current.onresult = (event) => {
+        const transcript = event.results[0][0].transcript;
+        setMessage((prev) => prev ? prev + ' ' + transcript : transcript);
+      };
+      
+      recognitionRef.current.onerror = (event) => {
+        console.error('Speech recognition error', event.error);
+        setIsRecording(false);
+      };
+      
+      recognitionRef.current.onend = () => {
+        setIsRecording(false);
+      };
+    }
+  }, [setMessage]);
+
+  const toggleRecording = () => {
+    if (disabled) return;
+    if (isRecording) {
+      recognitionRef.current?.stop();
+      setIsRecording(false);
+    } else {
+      if (recognitionRef.current) {
+        // Use selected language for speech recognition
+        const lang = localStorage.getItem('language') === 'ta' ? 'ta-IN' : 'en-US';
+        recognitionRef.current.lang = lang;
+        recognitionRef.current.start();
+        setIsRecording(true);
+      } else {
+        alert('Speech recognition is not supported in this browser.');
+      }
+    }
+  };
+
+  const handleDocumentClick = () => {
+    if (disabled || isUploading) return;
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    
+    setIsUploading(true);
+    try {
+      const data = await uploadDocument(file);
+      if (data && data.text) {
+        const docContext = `\n\n[Attached Document: ${file.name}]\n${data.text}\n`;
+        setMessage((prev) => prev + docContext);
+      }
+    } catch (error) {
+      console.error(error);
+      alert('Failed to upload document: ' + error.message);
+    } finally {
+      setIsUploading(false);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    }
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -79,21 +154,37 @@ const ChatInput = ({ value: message, onChange: setMessage, onSendMessage, isLoad
 
           {/* Action Buttons */}
           <div className="flex items-center gap-1 pr-2 pb-2">
-            {/* Voice Input (disabled) */}
+            
+            {/* Hidden File Input */}
+            <input 
+              type="file" 
+              ref={fileInputRef} 
+              onChange={handleFileChange} 
+              accept=".pdf,.txt" 
+              className="hidden" 
+            />
+
+            {/* Voice Input */}
             <button
               type="button"
-              disabled
-              className="p-2.5 text-text-secondary hover:text-text-primary rounded-xl hover:bg-hover-bg transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+              onClick={toggleRecording}
+              disabled={disabled}
+              className={`p-2.5 rounded-xl transition-colors ${
+                isRecording ? 'text-red-500 bg-red-500/10 animate-pulse' : 'text-text-secondary hover:text-text-primary hover:bg-hover-bg'
+              } disabled:opacity-40 disabled:cursor-not-allowed`}
               title={t('voiceInput')}
             >
               <FiMic className="w-5 h-5" />
             </button>
 
-            {/* PDF Upload (disabled) */}
+            {/* PDF Upload */}
             <button
               type="button"
-              disabled
-              className="p-2.5 text-text-secondary hover:text-text-primary rounded-xl hover:bg-hover-bg transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+              onClick={handleDocumentClick}
+              disabled={disabled || isUploading}
+              className={`p-2.5 rounded-xl transition-colors ${
+                isUploading ? 'text-accent animate-pulse' : 'text-text-secondary hover:text-text-primary hover:bg-hover-bg'
+              } disabled:opacity-40 disabled:cursor-not-allowed`}
               title={t('pdfUpload')}
             >
               <FiFile className="w-5 h-5" />

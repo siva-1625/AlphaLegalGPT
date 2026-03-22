@@ -41,8 +41,8 @@ const Sidebar = ({
   }, []);
 
   const languages = [
-    { code: 'en', name: 'English', flag: '🇬🇧' },
-    { code: 'ta', name: 'தமிழ்', flag: '🇮🇳' },
+    { code: 'en', name: 'English', label: 'EN' },
+    { code: 'ta', name: 'தமிழ்', label: 'TA' },
   ];
 
   return (
@@ -125,24 +125,31 @@ const Sidebar = ({
 
       {/* Footer */}
       <div className="p-3 border-t border-border relative" ref={menuRef}>
-        {/* Language Toggle */}
-        <div className="flex items-center justify-between px-3 py-2 mb-2">
-          <div className="flex items-center gap-2 text-text-secondary">
-            <FiGlobe className="w-4 h-4" />
-            <span className="text-sm">{language === 'en' ? 'EN' : 'TA'}</span>
-          </div>
-          <div className="flex gap-1">
+        {/* Language Toggle - Redesigned as a Segmented Control */}
+        <div className="mb-4 px-1">
+          <div className="bg-hover-bg/30 p-1 rounded-xl flex items-center relative h-11 border border-border/50">
+            {/* Animated Slider */}
+            <motion.div
+              initial={false}
+              animate={{
+                x: language === 'en' ? 0 : '100%'
+              }}
+              transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+              className="absolute top-1 bottom-1 left-1 w-[calc(50%-4px)] bg-accent rounded-lg shadow-lg z-0"
+            />
+            
             {languages.map((lang) => (
               <button
                 key={lang.code}
                 onClick={() => onLanguageChange(lang.code)}
-                className={`px-2 py-1 text-xs rounded-md transition-colors ${
-                  language === lang.code
-                    ? 'bg-accent text-white'
-                    : 'bg-hover-bg text-text-secondary hover:text-text-primary'
+                className={`relative z-10 flex-1 flex items-center justify-center gap-2 py-1.5 transition-colors duration-200 ${
+                  language === lang.code ? 'text-white' : 'text-text-secondary hover:text-text-primary'
                 }`}
               >
-                {lang.flag}
+                <span className="text-sm font-bold">{lang.label}</span>
+                <span className="text-xs font-semibold uppercase tracking-wider opacity-80">
+                  {lang.code === 'en' ? 'English' : 'தமிழ்'}
+                </span>
               </button>
             ))}
           </div>

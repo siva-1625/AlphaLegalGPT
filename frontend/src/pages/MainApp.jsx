@@ -64,6 +64,11 @@ function MainApp() {
     }
   }, []);
 
+  // Clear input when switching chats
+  useEffect(() => {
+    setInputValue('');
+  }, [currentChatId]);
+
   // Handle sending message
   const handleSendMessage = async (content) => {
     setInputValue('');

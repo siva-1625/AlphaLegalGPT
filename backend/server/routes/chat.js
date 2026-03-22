@@ -1,8 +1,11 @@
 import express from 'express';
+import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
+import { Chat } from '../models/Chat.js';
+import { User } from '../models/User.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -15,13 +18,20 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 const getSystemPrompt = (languageCode) => {
   const isTamil = languageCode === 'ta';
   const defaultLanguage = isTamil ? "Tamil" : "English";
+  const fallbackMessage = isTamil 
+    ? "மன்னிக்கவும், நான் ஒரு AI சட்ட உதவியாளர், என்னால் சட்டம் அல்லது சட்ட ரீதியான கேள்விகளுக்கு மட்டுமே உதவ முடியும்."
+    : "I am sorry, but I am an AI Legal Assistant and I can only help with law or legal-related questions.";
 
-  return `You are AI LegalGPT, an Indian legal assistant.
-Answer legal questions clearly.
-IMPORTANT: You MUST answer strictly in the ${defaultLanguage} language, regardless of the language the user used to ask the question.
-HOWEVER, if the user specifically requests the answer in a different language within their question (e.g., "in Tamil", "in English"), you MUST prioritize their request and answer in the language they explicitly asked for.
-Do not mention datasets or training data.
-Provide simple explanations suitable for the general public.`;
+  return `You are AI LegalGPT, a professional Indian legal assistant.
+Your scope is STRICTLY LIMITED to law, legal procedures, Indian statutes, and legal advice.
+If a user asks a question that is NOT related to law or legal matters (e.g., general knowledge, personal advice, random facts, jokes, or non-legal topics), you MUST NOT answer it.
+Instead, you must respond ONLY with the following exact message: "${fallbackMessage}"
+
+IMPORTANT: 
+1. You MUST answer strictly in the ${defaultLanguage} language.
+2. If the user specifically requests a different language (e.g., "in Tamil", "in English"), you can use that language.
+3. Do not mention datasets or training data.
+4. Provide simple, accurate explanations of Indian law suitable for the general public.`;
 };
 
 // POST /api/chat
@@ -48,12 +58,95 @@ router.post('/', async (req, res) => {
       section_title: "",
       confidence: 1.0
     });
+
+    // Save to history asynchronously
+    const userId = req.user.id;
+    const sessionId = req.body.sessionId || 'default';
+    const existingChat = await Chat.findSession(userId, sessionId);
+    
+    const userMessage = {
+      id: `msg_${Date.now()}`,
+      role: 'user',
+      content: query,
+      timestamp: new Date().toISOString()
+    };
+    
+    const aiMessage = {
+      id: `msg_${Date.now() + 1}`,
+      role: 'assistant',
+      content: answer,
+      timestamp: new Date().toISOString()
+    };
+
+    const updatedMessages = [...(existingChat?.messages || []), userMessage, aiMessage];
+    
+    // Auto-generate title if it's the first message
+    let title = existingChat?.title || 'New Chat';
+    if (title === 'New Chat' || !existingChat) {
+      title = query.slice(0, 30) + (query.length > 30 ? '...' : '');
+    }
+
+    await Chat.save(userId, {
+      id: sessionId,
+      title,
+      messages: updatedMessages
+    });
+
   } catch (error) {
     console.error('Chat error:', error);
     res.status(500).json({ 
       error: "Failed to get response from AI LegalGPT",
       details: error.message
     });
+  }
+});
+
+// GET /api/chat/history
+router.get('/history', async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const chats = await Chat.findByUser(userId);
+    res.json({ history: chats });
+  } catch (error) {
+    console.error('Get history error:', error);
+    res.status(500).json({ error: 'Failed to fetch history' });
+  }
+});
+
+// GET /api/chat/history/:sessionId
+router.get('/history/:sessionId', async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const { sessionId } = req.params;
+    const chat = await Chat.findSession(userId, sessionId);
+    res.json({ history: chat ? chat.messages : [] });
+  } catch (error) {
+    console.error('Get session history error:', error);
+    res.status(500).json({ error: 'Failed to fetch session history' });
+  }
+});
+
+// DELETE /api/chat/history/:sessionId
+router.get('/clear-all', async (req, res) => {
+  try {
+    const userId = req.user.id;
+    await Chat.clear(userId);
+    res.json({ success: true, message: 'All chat history cleared' });
+  } catch (error) {
+    console.error('Clear history error:', error);
+    res.status(500).json({ error: 'Failed to clear history' });
+  }
+});
+
+router.delete('/history/:sessionId', async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const { sessionId } = req.params;
+    await Chat.delete(userId, sessionId);
+    res.json({ success: true, message: 'Chat session deleted' });
+  } catch (error) {
+    console.error('Delete session error:', error);
+    res.status(500).json({ error: 'Failed to delete session' });
   }
 });
 
@@ -65,7 +158,17 @@ export const setupSocketHandlers = (io) => {
     console.log('Client connected:', socket.id);
     
     socket.on('chat:message', async (data) => {
-      const { query, language } = data;
+      const { query, language, sessionId, token } = data;
+      
+      let userId = 'anonymous';
+      if (token) {
+        try {
+          const decoded = jwt.verify(token, process.env.JWT_SECRET);
+          userId = decoded.id;
+        } catch (err) {
+          console.error('Socket token verification failed:', err);
+        }
+      }
       
       try {
         socket.emit('chat:typing', { isTyping: true });
@@ -83,6 +186,39 @@ export const setupSocketHandlers = (io) => {
           section_title: "",
           confidence: 1.0,
         });
+
+        // Save to history
+        if (userId !== 'anonymous') {
+          const sId = sessionId || 'default';
+          const existingChat = await Chat.findSession(userId, sId);
+          
+          const userMessage = {
+            id: `msg_${Date.now()}`,
+            role: 'user',
+            content: query,
+            timestamp: new Date().toISOString()
+          };
+          
+          const aiMessage = {
+            id: `msg_${Date.now() + 1}`,
+            role: 'assistant',
+            content: answer,
+            timestamp: new Date().toISOString()
+          };
+
+          const updatedMessages = [...(existingChat?.messages || []), userMessage, aiMessage];
+          
+          let title = existingChat?.title || 'New Chat';
+          if (title === 'New Chat' || !existingChat) {
+            title = query.slice(0, 30) + (query.length > 30 ? '...' : '');
+          }
+
+          await Chat.save(userId, {
+            id: sId,
+            title,
+            messages: updatedMessages
+          });
+        }
         
         socket.emit('chat:typing', { isTyping: false });
         

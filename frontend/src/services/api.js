@@ -4,7 +4,10 @@ const API_BASE_URL = '/api';
 const SOCKET_URL = window.location.origin;
 
 const getStoredToken = () => {
-  return localStorage.getItem('authToken') || localStorage.getItem('token');
+  return localStorage.getItem('authToken') || 
+         localStorage.getItem('token') || 
+         sessionStorage.getItem('authToken') || 
+         sessionStorage.getItem('token');
 };
 
 /**

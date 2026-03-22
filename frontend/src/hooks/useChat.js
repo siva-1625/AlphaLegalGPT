@@ -1,8 +1,9 @@
-import { useState, useCallback, useRef, useEffect } from 'react';
-import { initializeSocket, getSocket } from '../services/api';
+import { useState, useCallback, useRef, useEffect, useMemo } from 'react';
+import { initializeSocket, getSocket, getChatHistory } from '../services/api';
+import { useAuth } from '../contexts/AuthContext';
 
-const STORAGE_KEY = 'attorneygpt_chats';
-const CURRENT_CHAT_KEY = 'attorneygpt_current_chat';
+const getStorageKey = (userId) => `attorneygpt_chats_${userId || 'guest'}`;
+const getCurrentChatKey = (userId) => `attorneygpt_current_chat_${userId || 'guest'}`;
 
 /**
  * Generate unique ID
@@ -22,6 +23,7 @@ const getTimestamp = () => {
  * Custom hook for chat functionality
  */
 export const useChat = () => {
+  const { user, token, isAuthenticated } = useAuth();
   const [messages, setMessages] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
@@ -31,26 +33,11 @@ export const useChat = () => {
   const [error, setError] = useState(null);
   
   const streamingTextRef = useRef('');
+
+  // Memoize storage keys based on userId
+  const STORAGE_KEY = useMemo(() => getStorageKey(user?.id), [user?.id]);
+  const CURRENT_CHAT_KEY = useMemo(() => getCurrentChatKey(user?.id), [user?.id]);
   
-  // Initialize socket on mount
-  useEffect(() => {
-    const socket = initializeSocket();
-    
-    socket.on('connect', () => {
-      console.log('Socket connected');
-    });
-    
-    socket.on('disconnect', () => {
-      console.log('Socket disconnected');
-    });
-    
-    // Load saved chats from localStorage
-    loadChats();
-    
-    return () => {
-      // Cleanup handled by socket manager
-    };
-  }, []);
   
   /**
    * Load chats from localStorage
@@ -64,22 +51,25 @@ export const useChat = () => {
         const parsedChats = JSON.parse(savedChats);
         setChats(parsedChats);
         
-        if (savedCurrentChat && parsedChats.find(c => c.id === savedCurrentChat)) {
-          setCurrentChatId(savedCurrentChat);
-          const currentChat = parsedChats.find(c => c.id === savedCurrentChat);
-          if (currentChat && currentChat.messages) {
-            setMessages(currentChat.messages);
-          }
-        } else if (parsedChats.length > 0) {
-          setCurrentChatId(parsedChats[0].id);
-          setMessages(parsedChats[0].messages || []);
+        const currentChat = savedCurrentChat 
+          ? parsedChats.find(c => c.id === savedCurrentChat)
+          : parsedChats[0];
+
+        if (currentChat) {
+          setCurrentChatId(currentChat.id);
+          setMessages(currentChat.messages || []);
         }
+      } else {
+        // Reset state if no saved chats (e.g. new user)
+        setChats([]);
+        setCurrentChatId(null);
+        setMessages([]);
       }
     } catch (error) {
       console.error('Error loading chats:', error);
     }
-  }, []);
-  
+  }, [STORAGE_KEY, CURRENT_CHAT_KEY]);
+
   /**
    * Save chats to localStorage
    */
@@ -89,7 +79,68 @@ export const useChat = () => {
     } catch (error) {
       console.error('Error saving chats:', error);
     }
-  }, []);
+  }, [STORAGE_KEY]);
+
+  /**
+   * Sync chats with backend
+   */
+  const syncWithBackend = useCallback(async () => {
+    if (!user) return;
+    
+    try {
+      // Fetch all sessions (headers will include token if available)
+      const response = await fetch('/api/chat/history', {
+        headers: {
+          'Authorization': `Bearer ${sessionStorage.getItem('authToken')}`
+        }
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        if (data.history && data.history.length > 0) {
+          setChats(data.history);
+          saveChats(data.history); // Update local cache
+          
+          // If no current chat or current chat not in history, switch to most recent
+          const currentInHistory = data.history.find(c => c.id === currentChatId);
+          if (!currentChatId || !currentInHistory) {
+            const mostRecent = data.history[0];
+            setCurrentChatId(mostRecent.id);
+            setMessages(mostRecent.messages || []);
+          }
+        }
+      }
+    } catch (error) {
+      console.error('Error syncing with backend:', error);
+    }
+  }, [user, saveChats]); // Removed currentChatId from dependencies to prevent unintended syncs on switch
+  
+  /**
+   * Save chats to localStorage
+   */
+
+  // Initialize socket on mount
+  useEffect(() => {
+    const socket = initializeSocket();
+    
+    socket.on('connect', () => {
+      console.log('Socket connected');
+    });
+    
+    socket.on('disconnect', () => {
+      console.log('Socket disconnected');
+    });
+    
+    // Initial load and sync
+    loadChats();
+    if (user) {
+      syncWithBackend();
+    }
+
+    return () => {
+      // Cleanup handled by socket manager
+    };
+  }, [user?.id, isAuthenticated]); // Only reload when user identity changes or authentication status changes
   
   /**
    * Create new chat
@@ -112,10 +163,11 @@ export const useChat = () => {
     
     setCurrentChatId(newId);
     setMessages([]);
+    localStorage.setItem(CURRENT_CHAT_KEY, newId);
     setError(null);
     
     return newId;
-  }, [saveChats]);
+  }, [saveChats, CURRENT_CHAT_KEY]);
   
   /**
    * Switch to different chat
@@ -127,7 +179,7 @@ export const useChat = () => {
       setMessages(chat.messages || []);
       localStorage.setItem(CURRENT_CHAT_KEY, chatId);
     }
-  }, [chats]);
+  }, [chats, CURRENT_CHAT_KEY]);
   
   /**
    * Delete chat
@@ -247,7 +299,8 @@ export const useChat = () => {
 socket.emit('chat:message', {
         query: content,
         sessionId: currentChatId || 'default',
-        language: localStorage.getItem('language') || 'en'
+        language: localStorage.getItem('language') || 'en',
+        token: sessionStorage.getItem('authToken')
       });
       
     } catch (err) {

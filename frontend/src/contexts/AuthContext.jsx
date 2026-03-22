@@ -17,6 +17,9 @@ export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
 
+  // Inactivity Timeout: 30 minutes
+  const INACTIVITY_TIMEOUT = 30 * 60 * 1000;
+
   useEffect(() => {
     // Check session storage to strictly persist only per-tab session
     const storedToken = sessionStorage.getItem('authToken');
@@ -42,6 +45,40 @@ export const AuthProvider = ({ children }) => {
     }
     setLoading(false);
   }, []);
+
+  // Inactivity Tracker
+  useEffect(() => {
+    let timeoutId;
+
+    const resetTimer = () => {
+      if (timeoutId) clearTimeout(timeoutId);
+      if (isAuthenticated) {
+        timeoutId = setTimeout(() => {
+          console.log('🚪 Auto-logging out due to 30m inactivity');
+          logout();
+        }, INACTIVITY_TIMEOUT);
+      }
+    };
+
+    if (isAuthenticated) {
+      // Events to track user activity
+      const events = ['mousemove', 'mousedown', 'keydown', 'scroll', 'touchstart', 'click'];
+      
+      events.forEach(event => {
+        window.addEventListener(event, resetTimer);
+      });
+
+      // Initial timer start
+      resetTimer();
+
+      return () => {
+        if (timeoutId) clearTimeout(timeoutId);
+        events.forEach(event => {
+          window.removeEventListener(event, resetTimer);
+        });
+      };
+    }
+  }, [isAuthenticated]);
 
   const login = async (email, password) => {
     try {
@@ -103,7 +140,7 @@ export const AuthProvider = ({ children }) => {
     document.documentElement.classList.add('dark');
   };
 
-  const value = {
+  const value = React.useMemo(() => ({
     user,
     token,
     isAuthenticated,
@@ -113,7 +150,7 @@ export const AuthProvider = ({ children }) => {
     verifyOTP,
     logout,
     resendOTP,
-  };
+  }), [user, token, isAuthenticated, loading, login, signup, verifyOTP, logout, resendOTP]);
 
   return (
     <AuthContext.Provider value={value}>

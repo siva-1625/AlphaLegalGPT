@@ -58,6 +58,10 @@ const resources = {
       loading: 'Loading...',
       connected: 'Connected',
       disconnected: 'Disconnected',
+      locationAccess: 'Location Access',
+      getDirections: 'Get Directions',
+      locationOn: 'Location On',
+      locationOff: 'Location Off',
       
       // Welcome
       welcomeTitle: 'Welcome to AlphaLegalGPT',
@@ -145,6 +149,10 @@ const resources = {
       loading: 'ஏற்றுகிறது...',
       connected: 'இணைக்கப்பட்டது',
       disconnected: 'துண்டிக்கப்பட்டது',
+      locationAccess: 'இருப்பிட அணுகல்',
+      getDirections: 'வழிமுறைகளைப் பெறுங்கள்',
+      locationOn: 'இருப்பிடம் ஆன்',
+      locationOff: 'இருப்பிடம் ஆஃப்',
       
       // Welcome
       welcomeTitle: 'அல்பாஎல்கல்ஜிபிடி-க்கு வரவேற்கிறோம்',

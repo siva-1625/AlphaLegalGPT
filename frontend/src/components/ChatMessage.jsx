@@ -6,7 +6,8 @@ import {
   FiChevronDown, 
   FiChevronUp, 
   FiCheckCircle,
-  FiAlertCircle 
+  FiAlertCircle,
+  FiMapPin as FiMapPinIcon 
 } from 'react-icons/fi';
 import { FaRobot, FaUserCircle } from 'react-icons/fa';
 
@@ -72,11 +73,29 @@ const ChatMessage = ({ message, isStreaming }) => {
 
           {/* Markdown Content */}
           <div className="markdown-content text-[15px] text-text-primary">
-            {isStreaming ? (
-              <ReactMarkdown>{message.content}</ReactMarkdown>
-            ) : (
-              <ReactMarkdown>{message.content}</ReactMarkdown>
-            )}
+            <ReactMarkdown
+              components={{
+                a: ({ node, ...props }) => {
+                  const isMaps = props.href?.includes('google.com/maps');
+                  if (isMaps) {
+                    return (
+                      <a
+                        {...props}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 px-3 py-1.5 bg-accent/20 hover:bg-accent/30 text-accent rounded-lg font-medium transition-all my-1 no-underline border border-accent/30"
+                      >
+                        <FiMapPinIcon className="w-4 h-4" />
+                        <span>{t('getDirections')}</span>
+                      </a>
+                    );
+                  }
+                  return <a {...props} className="text-accent underline hover:text-accent-hover" target="_blank" rel="noopener noreferrer" />;
+                }
+              }}
+            >
+              {message.content}
+            </ReactMarkdown>
           </div>
         </div>
 

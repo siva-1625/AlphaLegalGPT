@@ -4,12 +4,13 @@ import { useTranslation } from 'react-i18next';
 import { 
   FiSend, 
   FiMic, 
-  FiFile, 
-  FiX 
+  FiFile as FiFileIcon, 
+  FiX,
+  FiMapPin as FiMapPinIcon
 } from 'react-icons/fi';
 import { uploadDocument } from '../services/api';
 
-const ChatInput = ({ value: message, onChange: setMessage, onSendMessage, isLoading, disabled }) => {
+const ChatInput = ({ value: message, onChange: setMessage, onSendMessage, isLoading, disabled, isLocationEnabled, isLocationLoading, onLocationToggle }) => {
   const { t } = useTranslation();
   const textareaRef = useRef(null);
   const fileInputRef = useRef(null);
@@ -164,6 +165,30 @@ const ChatInput = ({ value: message, onChange: setMessage, onSendMessage, isLoad
               className="hidden" 
             />
 
+            {/* Location Toggle with Status Label */}
+            <div className="flex flex-col items-center">
+              <button
+                type="button"
+                onClick={onLocationToggle}
+                disabled={disabled || isLocationLoading}
+                className={`p-2.5 rounded-xl transition-colors ${
+                  isLocationEnabled ? 'text-accent bg-accent/10 border border-accent/20' : 'text-text-secondary hover:text-text-primary hover:bg-hover-bg'
+                } disabled:opacity-40 disabled:cursor-not-allowed`}
+                title={t('locationAccess')}
+              >
+                {isLocationLoading ? (
+                  <div className="w-5 h-5 border-2 border-accent/30 border-t-accent rounded-full animate-spin" />
+                ) : (
+                  <FiMapPinIcon className="w-5 h-5" />
+                )}
+              </button>
+              {isLocationEnabled && !isLocationLoading && (
+                <span className="text-[9px] font-bold text-accent uppercase tracking-tighter mt-0.5 animate-pulse">
+                  {t('locationOn')}
+                </span>
+              )}
+            </div>
+
             {/* Voice Input */}
             <button
               type="button"
@@ -187,7 +212,7 @@ const ChatInput = ({ value: message, onChange: setMessage, onSendMessage, isLoad
               } disabled:opacity-40 disabled:cursor-not-allowed`}
               title={t('pdfUpload')}
             >
-              <FiFile className="w-5 h-5" />
+              <FiFileIcon className="w-5 h-5" />
             </button>
 
             {/* Send Button */}
@@ -221,4 +246,3 @@ const ChatInput = ({ value: message, onChange: setMessage, onSendMessage, isLoad
 };
 
 export default ChatInput;
-

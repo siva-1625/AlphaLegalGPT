@@ -1,1 +1,146 @@
-[]
+[
+  {
+    "id": "chat_1774241977292_dgc3aob5y",
+    "title": "How do I get a community certi...",
+    "messages": [
+      {
+        "id": "msg_1774242001534",
+        "role": "user",
+        "content": "How do I get a community certificate",
+        "timestamp": "2026-03-23T05:00:01.534Z"
+      },
+      {
+        "id": "msg_1774242001535",
+        "role": "assistant",
+        "content": "In India, a Community Certificate (also known as a Caste Certificate) is a vital legal document that certifies an individual’s belonging to a specific community or caste, such as Scheduled Castes (SC), Scheduled Tribes (ST), or Other Backward Classes (OBC). This certificate is essential for availing benefits under various government schemes, educational quotas, and reservations in public employment.\n\nThe procedure to obtain a community certificate is governed by the rules of the respective state governments. Here is the general process:\n\n### 1. Where to Apply\nThe authority responsible for issuing these certificates is usually the **Revenue Department** of your state. You can apply through:\n*   **Online:** Most states have dedicated portals like \"e-Seva,\" \"MeeSeva,\" or \"e-District.\"\n*   **Offline:** You can visit the office of the **Tehsildar**, **Revenue Inspector**, or the **Sub-Divisional Magistrate (SDM)** in your area.\n\n### 2. Required Documents\nWhile requirements may vary slightly by state, you generally need the following:\n*   **Application Form:** Duly filled as per the state format.\n*   **Identity Proof:** Aadhaar Card, Voter ID, or PAN Card.\n*   **Address Proof:** Ration Card, Electricity Bill, or Water Bill.\n*   **Proof of Community:** \n    *   Caste certificate of your father or a close paternal relative.\n    *   School Leaving Certificate (TC) mentioning the caste of the applicant or the father.\n    *   An extract of the Service Record (if the father/relative is a government employee) mentioning the caste.\n*   **Affidavit:** A self-declaration or a notarized affidavit stating your community and caste details.\n\n### 3. The Procedure\n1.  **Submission:** Submit the application along with the required documents either online or at the local Revenue Office (Tehsildar's office).\n2.  **Verification:** The application is forwarded to a Village Administrative Officer (VAO) or a Revenue Inspector for field verification. They may visit your residence or interview neighbors to confirm your community status.\n3.  **Approval:** Once the verification report is positive, the Tehsildar or the designated Revenue Officer signs and issues the certificate.\n4.  **Collection:** You can download the digitally signed certificate from the online portal or collect the physical copy from the office.\n\n### 4. Validity\n*   For **SC/ST** categories, the certificate is generally valid for a lifetime.\n*   For **OBC** categories, the certificate is usually valid for one year (especially the 'Non-Creamy Layer' certificate), as it is linked to the annual income of the family.\n\n**Legal Note:** Providing false information to obtain a community certificate is a punishable offense under the Indian Penal Code and can lead to the cancellation of any benefits or jobs obtained using that certificate.",
+        "timestamp": "2026-03-23T05:00:01.534Z"
+      },
+      {
+        "id": "msg_1774242449320",
+        "role": "user",
+        "content": "How do I get a community certificate\n\n",
+        "timestamp": "2026-03-23T05:07:29.320Z"
+      },
+      {
+        "id": "msg_1774242449321",
+        "role": "assistant",
+        "content": "In India, a **Community Certificate** (also known as a Caste Certificate) is an essential legal document that certifies an individual’s belonging to a particular community, such as Scheduled Castes (SC), Scheduled Tribes (ST), or Other Backward Classes (OBC). It is required to avail of benefits such as reservations in educational institutions, government jobs, and various welfare schemes.\n\nThe procedure to obtain a community certificate generally falls under the jurisdiction of the State Government's Revenue Department. Here is the general legal process:\n\n### 1. Where to Apply\n*   **Online:** Most states now offer services through their official \"e-Seva\" or \"State Service Delivery Gateway\" portals (e.g., TN e-Seva in Tamil Nadu, Meeseva in Andhra Pradesh/Telangana, etc.).\n*   **Offline:** You can apply in person at the office of the **Tahsildar**, **Revenue Inspector (RI)**, or at a **Common Service Centre (CSC)** in your locality.\n\n### 2. Essential Documents Required\nWhile requirements may vary slightly by state, the standard legal documents include:\n*   **Identity Proof:** Aadhaar Card, Voter ID, or PAN Card.\n*   **Address Proof:** Ration Card, Electricity Bill, or Gas Bill.\n*   **Proof of Caste:** \n    *   Community certificate of parents or siblings.\n    *   School Transfer Certificate (TC) or Primary School Leaving Certificate of the applicant or parents mentioning the caste.\n*   **Affidavit:** In some cases, a self-declaration or an affidavit signed before a Notary/Magistrate may be required.\n*   **Photographs:** Recent passport-sized photos.\n\n### 3. Application Procedure\n1.  **Form Submission:** Fill out the prescribed application form and attach the necessary documents.\n2.  **Verification:** Once submitted, the application is forwarded to the **Village Administrative Officer (VAO)** or the **Revenue Inspector (RI)**. They will conduct a local enquiry to verify your community status and residence.\n3.  **Approval:** After the field verification, a report is submitted to the **Tahsildar** or the competent Revenue Authority.\n4.  **Issuance:** If the report is favorable, the Tahsildar signs and issues the certificate.\n\n### 4. Legal Validity\nA Community Certificate is usually valid for a lifetime. However, for the **OBC-Non Creamy Layer (NCL)** category, the certificate usually needs to be renewed or updated annually or every three years, as it depends on the annual income of the family.\n\n**Note:** Providing false information to obtain a community certificate is a punishable offense under Indian law and can lead to the cancellation of benefits, fines, and imprisonment.",
+        "timestamp": "2026-03-23T05:07:29.320Z"
+      },
+      {
+        "id": "msg_1774242528525",
+        "role": "user",
+        "content": "\"How do I apply for a community certificate?\"",
+        "timestamp": "2026-03-23T05:08:48.525Z"
+      },
+      {
+        "id": "msg_1774242528526",
+        "role": "assistant",
+        "content": "In India, a Community Certificate (also known as a Caste Certificate) is a vital legal document that certifies an individual's caste or community (such as SC, ST, BC, MBC, or OBC). This certificate is essential for availing benefits in education, government jobs, and various welfare schemes.\n\n### Procedure to Apply for a Community Certificate:\n\n1.  **Application Method:**\n    *   **Online:** You can apply through the official state e-Sevai portal or visit a nearby Common Service Centre (CSC).\n    *   **Offline:** You can submit a physical application form at the **Taluk Office** or to the **Village Administrative Officer (VAO)**.\n\n2.  **Documents Required:**\n    *   Proof of Identity (Aadhaar Card, Voter ID, etc.).\n    *   Proof of Address (Ration Card, Electricity Bill, etc.).\n    *   Transfer Certificate (TC) from school or college.\n    *   Community Certificate of parents or siblings.\n    *   A self-declaration form.\n\n3.  **Verification Process:**\n    *   Once the application is submitted, it is forwarded to the **Village Administrative Officer (VAO)** for field verification.\n    *   The **Revenue Inspector (RI)** then reviews the report.\n    *   Finally, the **Tahsildar** or Zonal Deputy Tahsildar issues the certificate based on the verification reports.\n\n### Nearest Offices for Assistance:\n\nTo begin the process or for physical verification, you should visit the offices relevant to your locality. Based on your location, you can find the nearest offices here:\n\n*   **You can find the nearest VAO Office here:** https://www.google.com/maps/search/VAO+office/@12.974676013293152,80.22175009230644,15z\n*   **You can find the nearest Revenue Inspector (RI) Office here:** https://www.google.com/maps/search/Revenue+Inspector+office/@12.974676013293152,80.22175009230644,15z\n*   **You can find the nearest Taluk Office here:** https://www.google.com/maps/search/Taluk+Office/@12.974676013293152,80.22175009230644,15z",
+        "timestamp": "2026-03-23T05:08:48.525Z"
+      },
+      {
+        "id": "msg_1774242546908",
+        "role": "user",
+        "content": "\"How do I apply for a community certificate?\"\n\n",
+        "timestamp": "2026-03-23T05:09:06.908Z"
+      },
+      {
+        "id": "msg_1774242546909",
+        "role": "assistant",
+        "content": "In India, a community certificate (also known as a caste certificate) is a legal document issued by the state government that certifies an individual belongs to a particular community, such as Scheduled Castes (SC), Scheduled Tribes (ST), or Other Backward Classes (OBC).\n\nThe procedure for applying for a community certificate varies slightly from state to state, but the general process is as follows:\n\n### 1. Where to Apply\nYou can apply for a community certificate either online or offline:\n*   **Online:** Most states have dedicated portals like e-District, e-Sevai (Tamil Nadu), MeeSeva (Andhra Pradesh/Telangana), or Seva Sindhu (Karnataka).\n*   **Offline:** You can visit the office of the **Tahsildar**, **Revenue Department**, or a **Common Service Center (CSC)** in your locality.\n\n### 2. Essential Documents Required\nWhile requirements may vary by state, you generally need the following:\n*   **Identity Proof:** Aadhaar Card, Voter ID, or PAN Card.\n*   **Address Proof:** Ration Card, Electricity Bill, or Telephone Bill.\n*   **Proof of Caste:** \n    *   Community certificate of your father, mother, or siblings.\n    *   School Leaving Certificate or Transfer Certificate (TC) mentioning the caste of the applicant or parent.\n    *   Extract from the Birth Register.\n*   **Affidavit:** In some cases, a self-declaration or an affidavit on a non-judicial stamp paper may be required.\n*   **Photographs:** Passport-sized photos.\n\n### 3. Application Procedure\n1.  **Obtain the Form:** Get the application form from the Tahsildar’s office or download it from the state's official portal.\n2.  **Fill and Attach:** Complete the form and attach self-attested copies of the required documents.\n3.  **Submission:** Submit the form at the Revenue Office or upload it on the online portal. You will receive an application number for tracking.\n4.  **Verification:** A Revenue Inspector or Village Administrative Officer (VAO) may conduct a field verification to confirm the details provided.\n5.  **Issuance:** Once the verification is successful, the competent authority (usually the Tahsildar or Zonal Deputy Tahsildar) will issue the certificate.\n\n### 4. Important Legal Points\n*   **Validity:** Generally, a community certificate is valid for a lifetime unless there is a change in the legal status of the community.\n*   **False Information:** Providing false information to obtain a community certificate is a punishable offense under the Indian Penal Code and can lead to the cancellation of benefits and legal prosecution.\n\nIt is recommended to check the specific official website of your state government for the exact list of documents and the digital application link.",
+        "timestamp": "2026-03-23T05:09:06.908Z"
+      },
+      {
+        "id": "msg_1774242737051",
+        "role": "user",
+        "content": "\"How do I apply for a community certificate?\"\n\n",
+        "timestamp": "2026-03-23T05:12:17.051Z"
+      },
+      {
+        "id": "msg_1774242737052",
+        "role": "assistant",
+        "content": "In India, a Community Certificate (also known as a Caste Certificate) is a vital legal document that certifies an individual's belonging to a specific community or caste, such as Scheduled Castes (SC), Scheduled Tribes (ST), or Other Backward Classes (OBC). This certificate is necessary to avail of benefits under various government schemes, educational quotas, and job reservations.\n\nThe application process is handled by the Revenue Department of the respective state government. Here is the general procedure to apply for a community certificate:\n\n### 1. Where to Apply\nYou can apply for a community certificate through two primary methods:\n*   **Online:** Most states offer services through their official \"e-District\" or \"State Service Delivery Gateway\" portals (e.g., e-Sevai in Tamil Nadu, MeeSeva in Andhra Pradesh/Telangana, or Sakala in Karnataka).\n*   **Offline:** You can visit the office of the **Tehsildar**, **Revenue Inspector (RI)**, or the **Village Administrative Officer (VAO)** in your area.\n\n### 2. Documents Required\nWhile requirements may vary slightly by state, the following documents are generally necessary:\n*   **Application Form:** Duly filled as per the prescribed format.\n*   **Identity Proof:** Aadhaar Card, Voter ID, or PAN Card.\n*   **Address Proof:** Ration Card, Electricity Bill, or Passport.\n*   **Proof of Caste:** \n    *   Community certificate of parents or siblings.\n    *   School Leaving Certificate (TC) or Transfer Certificate of the applicant or parents showing the caste/religion.\n    *   Extract from the Service Register (if parents are government employees).\n*   **Affidavit:** In some cases, a self-declaration or an affidavit on a non-judicial stamp paper may be required.\n\n### 3. Step-by-Step Procedure\n1.  **Submission:** Submit the application form along with the required documents either online or at the Tehsildar’s office/Common Service Centre (CSC).\n2.  **Field Verification:** Once submitted, the application is forwarded to the local Revenue authorities (like the VAO or RI). They may conduct a field inquiry to verify your residence and community status.\n3.  **Approval:** After the verification report is submitted, the Tehsildar or the designated Sub-Divisional Magistrate (SDM) reviews the file.\n4.  **Issuance:** If satisfied, the authority will issue the Community Certificate. If you applied online, you can download the digitally signed certificate from the portal.\n\n### 4. Important Legal Points\n*   **Validity:** Generally, a community certificate is valid for a lifetime unless there is a change in the law or the status of the community. However, for OBC candidates, a \"Non-Creamy Layer\" (NCL) certificate must be renewed annually to prove income status.\n*   **False Claims:** Providing false information to obtain a community certificate is a punishable offense under the Indian Penal Code (IPC) and specific state laws, which may result in the cancellation of the certificate, loss of job/education seat, and criminal prosecution.\n\n*Note: Since land and revenue are state subjects, it is recommended to check the specific official website of your state government for the exact local procedure.*",
+        "timestamp": "2026-03-23T05:12:17.051Z"
+      }
+    ],
+    "userId": "des3tcef7",
+    "createdAt": "2026-03-23T05:00:01.538Z",
+    "updatedAt": "2026-03-23T05:12:17.053Z"
+  },
+  {
+    "id": "chat_1774243054505_d1790hihf",
+    "title": "How to get an income certifica...",
+    "messages": [
+      {
+        "id": "msg_1774243095007",
+        "role": "user",
+        "content": "How to get an income certificate?",
+        "timestamp": "2026-03-23T05:18:15.007Z"
+      },
+      {
+        "id": "msg_1774243095008",
+        "role": "assistant",
+        "content": "In India, an **Income Certificate** is an official document issued by the state government that certifies the annual income of an individual or their family from all sources. It is a vital document used to avail of various government schemes, scholarships, and fee concessions.\n\nHere is the legal procedure to obtain an Income Certificate in India:\n\n### 1. Issuing Authority\nThe certificate is typically issued by the **Revenue Department**. Depending on your state, the competent authority may be the Tahsildar, Sub-Divisional Magistrate (SDM), District Magistrate, or Revenue Inspector.\n\n### 2. Application Process\nYou can apply for an income certificate through two primary modes:\n\n*   **Online Mode:** Most Indian states now provide this service through their respective **\"e-District\"** or **\"State Service Delivery Gateway (SSDG)\"** portals (e.g., e-District Delhi, MahaOnline in Maharashtra, or MeeSeva in Andhra Pradesh/Telangana). You must register, fill out the form, and upload scanned documents.\n*   **Offline Mode:** You can visit the local **Tehsil office**, **Collectorate**, or **Common Service Centres (CSC)** to collect and submit a physical application form.\n\n### 3. Required Documents\nWhile requirements may vary slightly from state to state, the general list of documents includes:\n*   **Identity Proof:** Aadhaar Card, Voter ID, or Passport.\n*   **Address Proof:** Ration Card, Electricity Bill, or Water Bill.\n*   **Income Proof:** \n    *   For salaried individuals: Salary slips or Form 16.\n    *   For non-salaried/self-employed: An **Affidavit** (self-declaration) stating the annual income, sworn before a Notary or Executive Magistrate.\n    *   Income Tax Return (ITR) certificates, if applicable.\n*   **Passport-sized photographs.**\n\n### 4. Verification and Issuance\nOnce the application is submitted:\n1.  The application is forwarded to the local Revenue Officer (such as a Patwari or Talathi).\n2.  The officer may conduct a field inquiry to verify the income details provided.\n3.  After successful verification, the designated authority signs and issues the certificate.\n\n### 5. Timeline and Validity\n*   **Processing Time:** Usually takes **7 to 15 days**, depending on the state.\n*   **Validity:** Generally, an income certificate is valid for the **financial year** in which it is issued. Some states may specify a validity of six months or one year from the date of issuance.\n\n**Note:** Always ensure that the information provided is accurate. Providing false information to obtain a government certificate can lead to legal action under the Indian Penal Code (IPC) for fraud and misrepresentation.",
+        "timestamp": "2026-03-23T05:18:15.007Z"
+      },
+      {
+        "id": "msg_1774243358579",
+        "role": "user",
+        "content": "How to get an income certificate?\n\n",
+        "timestamp": "2026-03-23T05:22:38.579Z"
+      },
+      {
+        "id": "msg_1774243358580",
+        "role": "assistant",
+        "content": "In India, an Income Certificate is an official document issued by the State Government that certifies the annual income of an individual or their family from all sources. It is primarily used to avail of various government subsidies, educational scholarships, and reserved category benefits.\n\nHere is the procedure to obtain an Income Certificate:\n\n### 1. Issuing Authority\nThe certificate is typically issued by the **Revenue Department**. Depending on your state, the designated officer may be the **Tehsildar, Sub-Divisional Magistrate (SDM), or District Magistrate**.\n\n### 2. Methods of Application\n*   **Online:** Most states in India provide this service through their official **\"e-District\"** or **\"State Service Delivery Gateway (SSDG)\"** portals (e.g., e-District Delhi, MahaOnline in Maharashtra, or MeeSeva in Andhra Pradesh/Telangana).\n*   **Offline:** You can visit the local **Tehsil office, Revenue Office, or Common Service Centers (CSC)** to submit a physical application.\n\n### 3. Required Documents\nThe requirements may vary slightly by state, but generally include:\n*   **Identity Proof:** Aadhaar Card, Voter ID, or PAN Card.\n*   **Address Proof:** Ration Card, Electricity bill, or Water bill.\n*   **Income Proof:** \n    *   For salaried individuals: Form 16 or Salary Slips.\n    *   For self-employed/others: Income Tax Returns (ITR) or an **Income Affidavit** (duly notarized).\n    *   For agricultural income: Records of land ownership (Patta/7-12 extract).\n*   **Passport-size photographs.**\n\n### 4. Step-by-Step Process\n1.  **Submission:** Fill out the application form (online or offline) and attach the self-attested copies of the required documents.\n2.  **Verification:** Once submitted, the application is forwarded to the local **Village Revenue Officer (VRO) or Talati**, who may conduct a field inquiry to verify your income details and assets.\n3.  **Approval:** After the verification report is submitted, the Tehsildar or the designated Revenue Officer reviews the report and approves the issuance of the certificate.\n4.  **Collection:** You can download the digitally signed certificate from the online portal or collect it from the office/CSC center.\n\n### 5. Validity\nAn Income Certificate is usually valid for one financial year. You must renew it after the expiry period (typically March 31st of every year) to continue receiving government benefits.\n\n**Note:** Ensure all information provided is accurate. Providing false information to obtain a government certificate is a punishable offense under the Indian Penal Code.",
+        "timestamp": "2026-03-23T05:22:38.579Z"
+      }
+    ],
+    "userId": "h96g62563",
+    "createdAt": "2026-03-23T05:18:15.014Z",
+    "updatedAt": "2026-03-23T05:22:38.581Z"
+  },
+  {
+    "id": "chat_1774243840484_vriu7l3nv",
+    "title": "How to get an income certifica...",
+    "messages": [
+      {
+        "id": "msg_1774243851864",
+        "role": "user",
+        "content": "How to get an income certificate?\n\n",
+        "timestamp": "2026-03-23T05:30:51.864Z"
+      },
+      {
+        "id": "msg_1774243851865",
+        "role": "assistant",
+        "content": "An Income Certificate is an official document issued by the State Government that certifies the annual income of an individual or their family from all sources. In India, this certificate is usually issued by the Revenue Department (Tehsildar or District Magistrate office).\n\nHere is the general procedure to obtain an income certificate in India:\n\n### 1. Where to Apply\n*   **Online:** Most states in India offer this service through their official **\"e-District\"** or **\"Service Plus\"** portals (e.g., e-District Delhi, MeeSeva in Andhra Pradesh/Telangana, or Sakala in Karnataka).\n*   **Offline:** You can visit the local **Tehsildar’s office**, Revenue Office, or Common Service Centres (CSC) like Jan Seva Kendras.\n\n### 2. Documents Required\nWhile requirements may vary slightly by state, the standard documents include:\n*   **Identity Proof:** Aadhaar Card, Voter ID, or PAN Card.\n*   **Address Proof:** Ration Card, Electricity Bill, or Water Bill.\n*   **Income Proof:** \n    *   For salaried employees: Form 16 or Salary Slips.\n    *   For non-salaried/self-employed: Income Tax Returns (ITR) or an **Affidavit** declaring income.\n    *   For farmers: Land records (Patta/Chitta).\n*   **Passport-size photographs.**\n\n### 3. Step-by-Step Process\n1.  **Obtain the Application Form:** Download it from the state portal or collect it from the local Revenue Office.\n2.  **Submit the Form:** Fill in the details and attach self-attested copies of the required documents.\n3.  **Verification:** After submission, a local Revenue Official (such as a Patwari, Village Administrative Officer (VAO), or Revenue Inspector) may conduct a field inquiry to verify your income and residence.\n4.  **Issuance:** Once the verification report is submitted and approved by the Tehsildar or Sub-Divisional Magistrate (SDM), the certificate is issued.\n\n### 4. Processing Time and Validity\n*   **Time:** It usually takes **7 to 15 days** to receive the certificate after successful verification.\n*   **Validity:** An income certificate is generally valid for **one financial year**. You must renew it after the expiry date mentioned on the document.\n\n**Legal Note:** Providing false information or forged documents to obtain an income certificate is a punishable offense under the Indian Penal Code (IPC) for fraud and misrepresentation.",
+        "timestamp": "2026-03-23T05:30:51.864Z"
+      }
+    ],
+    "userId": "ut4qfxa3v",
+    "createdAt": "2026-03-23T05:30:51.869Z",
+    "updatedAt": "2026-03-23T05:30:51.869Z"
+  },
+  {
+    "id": "chat_1774244739095_e9w2jne9j",
+    "title": "how to apply income certicate?",
+    "messages": [
+      {
+        "id": "msg_1774244770989",
+        "role": "user",
+        "content": "how to apply income certicate?",
+        "timestamp": "2026-03-23T05:46:10.989Z"
+      },
+      {
+        "id": "msg_1774244770990",
+        "role": "assistant",
+        "content": "In India, an **Income Certificate** is an official document issued by the state government that certifies the annual income of an individual or their family from all sources. This document is legally required to avail of various government subsidies, scholarships, and reservations (such as EWS or OBC categories).\n\nThe procedure to apply for an Income Certificate is as follows:\n\n### 1. Issuing Authority\nThe certificate is typically issued by the **Revenue Department**. The designated signing authority is usually the **Tehsildar**, Sub-Divisional Magistrate (SDM), or Revenue Circle Officer, depending on your state.\n\n### 2. Modes of Application\n*   **Online:** Most states have an \"e-District\" portal or a dedicated state service portal (e.g., *MeeSeva* in Andhra Pradesh/Telangana, *e-Seva* in Karnataka, *Digital Gujarat*, etc.).\n*   **Offline:** You can visit the local Tehsildar’s office, the District Magistrate’s office, or a **Common Service Centre (CSC)** to submit a physical application.\n\n### 3. Essential Documents\nWhile requirements may vary slightly by state, the following documents are generally required:\n*   **Identity Proof:** Aadhaar Card, Voter ID, or PAN Card.\n*   **Address Proof:** Ration Card, Electricity Bill, or Water Bill.\n*   **Income Proof:** \n    *   For salaried individuals: Salary slips or Form 16.\n    *   For self-employed/others: An affidavit declaring annual income, or Income Tax Returns (ITR).\n    *   For farmers: Revenue records of land (e.g., 7/12 extract).\n*   **Age Proof:** Birth Certificate or School Leaving Certificate.\n*   **Passport-sized Photographs.**\n\n### 4. Step-by-Step Process\n1.  **Obtain Application:** Download the application form from the state's e-district portal or collect it from the local Revenue Office.\n2.  **Fill Details:** Enter the details of all family members and the exact income earned from all sources (agriculture, business, rent, etc.).\n3.  **Affidavit:** In many states, you must submit a self-declaration or an affidavit attested by a Notary or Executive Magistrate.\n4.  **Submission:** Submit the form along with the documents and pay the nominal processing fee.\n5.  **Verification:** A local inquiry is conducted by the **Village Revenue Officer (VRO)** or **Talathi**, who visits the applicant or checks records to verify the declared income.\n6.  **Issuance:** Once the verification report is positive, the Tehsildar approves and issues the certificate. It is usually valid for one financial year.\n\n**Legal Note:** Under the Indian Penal Code (IPC), providing false information to a public servant or submitting a forged income certificate to gain benefits is a criminal offense, which can lead to prosecution and cancellation of any benefits obtained.",
+        "timestamp": "2026-03-23T05:46:10.989Z"
+      }
+    ],
+    "userId": "j1mmp11j9",
+    "createdAt": "2026-03-23T05:46:10.994Z",
+    "updatedAt": "2026-03-23T05:46:10.994Z"
+  }
+]

@@ -1,6 +1,7 @@
 import { useState, useCallback, useRef, useEffect, useMemo } from 'react';
 import { initializeSocket, getSocket, getChatHistory } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
+import { useGeolocation } from './useGeolocation';
 
 const getStorageKey = (userId) => `attorneygpt_chats_${userId || 'guest'}`;
 const getCurrentChatKey = (userId) => `attorneygpt_current_chat_${userId || 'guest'}`;
@@ -24,6 +25,8 @@ const getTimestamp = () => {
  */
 export const useChat = () => {
   const { user, token, isAuthenticated } = useAuth();
+  const { location, isEnabled, loading, toggleLocation } = useGeolocation();
+  
   const [messages, setMessages] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
@@ -32,13 +35,29 @@ export const useChat = () => {
   const [currentChatId, setCurrentChatId] = useState(null);
   const [error, setError] = useState(null);
   
-  const streamingTextRef = useRef('');
+  const lastQueryRef = useRef('');
+  const currentChatIdRef = useRef(null);
+
+  // Keep ref in sync
+  useEffect(() => {
+    currentChatIdRef.current = currentChatId;
+  }, [currentChatId]);
 
   // Memoize storage keys based on userId
   const STORAGE_KEY = useMemo(() => getStorageKey(user?.id), [user?.id]);
   const CURRENT_CHAT_KEY = useMemo(() => getCurrentChatKey(user?.id), [user?.id]);
-  
-  
+
+  /**
+   * Save chats to localStorage
+   */
+  const saveChats = useCallback((updatedChats) => {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedChats));
+    } catch (error) {
+      console.error('Error saving chats:', error);
+    }
+  }, [STORAGE_KEY]);
+
   /**
    * Load chats from localStorage
    */
@@ -60,7 +79,6 @@ export const useChat = () => {
           setMessages(currentChat.messages || []);
         }
       } else {
-        // Reset state if no saved chats (e.g. new user)
         setChats([]);
         setCurrentChatId(null);
         setMessages([]);
@@ -70,78 +88,6 @@ export const useChat = () => {
     }
   }, [STORAGE_KEY, CURRENT_CHAT_KEY]);
 
-  /**
-   * Save chats to localStorage
-   */
-  const saveChats = useCallback((updatedChats) => {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedChats));
-    } catch (error) {
-      console.error('Error saving chats:', error);
-    }
-  }, [STORAGE_KEY]);
-
-  /**
-   * Sync chats with backend
-   */
-  const syncWithBackend = useCallback(async () => {
-    if (!user) return;
-    
-    try {
-      // Fetch all sessions (headers will include token if available)
-      const response = await fetch('/api/chat/history', {
-        headers: {
-          'Authorization': `Bearer ${sessionStorage.getItem('authToken')}`
-        }
-      });
-      
-      if (response.ok) {
-        const data = await response.json();
-        if (data.history && data.history.length > 0) {
-          setChats(data.history);
-          saveChats(data.history); // Update local cache
-          
-          // If no current chat or current chat not in history, switch to most recent
-          const currentInHistory = data.history.find(c => c.id === currentChatId);
-          if (!currentChatId || !currentInHistory) {
-            const mostRecent = data.history[0];
-            setCurrentChatId(mostRecent.id);
-            setMessages(mostRecent.messages || []);
-          }
-        }
-      }
-    } catch (error) {
-      console.error('Error syncing with backend:', error);
-    }
-  }, [user, saveChats]); // Removed currentChatId from dependencies to prevent unintended syncs on switch
-  
-  /**
-   * Save chats to localStorage
-   */
-
-  // Initialize socket on mount
-  useEffect(() => {
-    const socket = initializeSocket();
-    
-    socket.on('connect', () => {
-      console.log('Socket connected');
-    });
-    
-    socket.on('disconnect', () => {
-      console.log('Socket disconnected');
-    });
-    
-    // Initial load and sync
-    loadChats();
-    if (user) {
-      syncWithBackend();
-    }
-
-    return () => {
-      // Cleanup handled by socket manager
-    };
-  }, [user?.id, isAuthenticated]); // Only reload when user identity changes or authentication status changes
-  
   /**
    * Create new chat
    */
@@ -162,222 +108,99 @@ export const useChat = () => {
     });
     
     setCurrentChatId(newId);
+    currentChatIdRef.current = newId;
     setMessages([]);
     localStorage.setItem(CURRENT_CHAT_KEY, newId);
-    setError(null);
-    
     return newId;
-  }, [saveChats, CURRENT_CHAT_KEY]);
-  
+  }, [CURRENT_CHAT_KEY, saveChats]);
+
   /**
-   * Switch to different chat
+   * Switch between chats
    */
   const switchChat = useCallback((chatId) => {
     const chat = chats.find(c => c.id === chatId);
     if (chat) {
       setCurrentChatId(chatId);
+      currentChatIdRef.current = chatId;
       setMessages(chat.messages || []);
       localStorage.setItem(CURRENT_CHAT_KEY, chatId);
     }
   }, [chats, CURRENT_CHAT_KEY]);
-  
+
   /**
-   * Delete chat
+   * Sync chats with backend
    */
-  const deleteChat = useCallback(async (chatId) => {
+  const syncWithBackend = useCallback(async () => {
+    if (!user) return;
+    
     try {
-      // Call backend to delete
-      const response = await fetch(`/api/chat/history/${chatId}`, {
+      const response = await fetch('/api/chat/history', {
+        headers: {
+          'Authorization': `Bearer ${sessionStorage.getItem('authToken')}`
+        }
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        if (data.history && data.history.length > 0) {
+          setChats(data.history);
+          saveChats(data.history);
+          
+          const currentInHistory = data.history.find(c => c.id === currentChatIdRef.current);
+          if (!currentChatIdRef.current || !currentInHistory) {
+            const mostRecent = data.history[0];
+            setCurrentChatId(mostRecent.id);
+            setMessages(mostRecent.messages || []);
+          }
+        }
+      }
+    } catch (err) {
+      console.error('Error syncing with backend:', err);
+    }
+  }, [user, saveChats]);
+
+  /**
+   * Delete a chat session
+   */
+  const deleteChat = useCallback(async (sessionId) => {
+    try {
+      await fetch(`/api/chat/history/${sessionId}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${sessionStorage.getItem('authToken')}`
         }
       });
-
-      if (response.ok) {
-        setChats(prev => {
-          const updated = prev.filter(c => c.id !== chatId);
-          saveChats(updated);
-          return updated;
-        });
+      
+      setChats(prev => {
+        const updated = prev.filter(c => c.id !== sessionId);
+        saveChats(updated);
         
-        if (currentChatId === chatId) {
-          const remaining = chats.filter(c => c.id !== chatId);
-          if (remaining.length > 0) {
-            switchChat(remaining[0].id);
+        if (currentChatIdRef.current === sessionId) {
+          if (updated.length > 0) {
+            setCurrentChatId(updated[0].id);
+            setMessages(updated[0].messages || []);
           } else {
-            createNewChat();
+            setCurrentChatId(null);
+            setMessages([]);
           }
         }
-      } else {
-        console.error('Failed to delete chat from backend');
-      }
-    } catch (error) {
-      console.error('Error deleting chat:', error);
-    }
-  }, [chats, currentChatId, switchChat, createNewChat, saveChats]);
-  
-  /**
-   * Send message
-   */
-  const sendMessage = useCallback(async (content) => {
-    if (!content.trim() || isLoading) return;
-    
-    const userMessage = {
-      id: generateId(),
-      role: 'user',
-      content: content.trim(),
-      timestamp: getTimestamp(),
-    };
-    
-    // Add user message immediately
-    setMessages(prev => [...prev, userMessage]);
-    setIsLoading(true);
-    setError(null);
-    setStreamingText('');
-    streamingTextRef.current = '';
-    
-    try {
-      // Initialize socket if needed
-      let socket = getSocket();
-      if (!socket) {
-        socket = initializeSocket();
-        await new Promise(resolve => setTimeout(resolve, 500));
-      }
-      
-      // Set up listeners
-      const handleStreaming = (data) => {
-        if (data.text) {
-          streamingTextRef.current += data.text;
-          setStreamingText(streamingTextRef.current);
-        }
-      };
-      
-      const handleComplete = (data) => {
-        cleanup();
-        
-        const aiMessage = {
-          id: generateId(),
-          role: 'assistant',
-          content: data.answer || streamingTextRef.current,
-          citations: data.citations || [],
-          confidence: data.confidence || 0,
-          timestamp: getTimestamp(),
-        };
-        
-        setMessages(prev => [...prev, aiMessage]);
-        setStreamingText('');
-        streamingTextRef.current = '';
-        setIsTyping(false);
-        
-        // Update chat in list
-        updateChatWithMessages([userMessage, aiMessage]);
-      };
-      
-      const handleError = (data) => {
-        cleanup();
-        setIsLoading(false);
-        setIsTyping(false);
-        const errorMsg = data.error || 'Failed to get response';
-        setError(errorMsg);
-        
-        const errorMessage = {
-          id: generateId(),
-          role: 'assistant',
-          content: 'I encountered an error: ' + errorMsg + '. Please check your API quota or network connection.',
-          isError: true,
-          timestamp: getTimestamp(),
-        };
-        
-        setMessages(prev => [...prev, errorMessage]);
-      };
-      
-      const handleTyping = (data) => {
-        setIsTyping(data.isTyping);
-      };
-      
-      const cleanup = () => {
-        const s = getSocket();
-        if (s) {
-          s.off('chat:streaming', handleStreaming);
-          s.off('chat:complete', handleComplete);
-          s.off('chat:error', handleError);
-          s.off('chat:typing', handleTyping);
-        }
-      };
-      
-      socket.on('chat:streaming', handleStreaming);
-      socket.on('chat:complete', handleComplete);
-      socket.on('chat:error', handleError);
-      socket.on('chat:typing', handleTyping);
-      
-      // Send message
-socket.emit('chat:message', {
-        query: content,
-        sessionId: currentChatId || 'default',
-        language: localStorage.getItem('language') || 'en',
-        token: sessionStorage.getItem('authToken')
+        return updated;
       });
-      
     } catch (err) {
-      console.error('Chat error:', err);
-      setError(err.message || 'Failed to send message');
-      
-      const errorMessage = {
-        id: generateId(),
-        role: 'assistant',
-        content: 'I encountered an error: ' + (err.message || 'Unknown error') + '. Please try again.',
-        isError: true,
-        timestamp: getTimestamp(),
-      };
-      
-      setMessages(prev => [...prev, errorMessage]);
-    } finally {
-      setIsLoading(false);
-      setIsTyping(false);
+      console.error('Error deleting chat:', err);
     }
-  }, [isLoading, currentChatId]);
-  
+  }, [saveChats]);
+
   /**
-   * Update chat with new messages
-   */
-  const updateChatWithMessages = useCallback((newMessages) => {
-    setChats(prev => {
-      const updated = prev.map(chat => {
-        if (chat.id === currentChatId) {
-          // Update title if first message
-          let title = chat.title;
-          if (title === 'New Chat' && newMessages.length > 0) {
-            const userMsg = newMessages.find(m => m.role === 'user');
-            if (userMsg) {
-              title = userMsg.content.slice(0, 30) + (userMsg.content.length > 30 ? '...' : '');
-            }
-          }
-          
-          return {
-            ...chat,
-            title,
-            messages: [...(chat.messages || []), ...newMessages],
-            updatedAt: getTimestamp(),
-          };
-        }
-        return chat;
-      });
-      
-      saveChats(updated);
-      return updated;
-    });
-  }, [currentChatId, saveChats]);
-  
-  /**
-   * Clear current chat
+   * Clear current chat local history
    */
   const clearChat = useCallback(() => {
-    setMessages([]);
+    if (!currentChatIdRef.current) return;
     
+    setMessages([]);
     setChats(prev => {
       const updated = prev.map(chat => {
-        if (chat.id === currentChatId) {
+        if (chat.id === currentChatIdRef.current) {
           return {
             ...chat,
             title: 'New Chat',
@@ -387,11 +210,10 @@ socket.emit('chat:message', {
         }
         return chat;
       });
-      
       saveChats(updated);
       return updated;
     });
-  }, [currentChatId, saveChats]);
+  }, [saveChats]);
 
   /**
    * Clear all history from backend and local
@@ -408,15 +230,159 @@ socket.emit('chat:message', {
         setChats([]);
         setMessages([]);
         setCurrentChatId(null);
+        currentChatIdRef.current = null;
         localStorage.removeItem(STORAGE_KEY);
         localStorage.removeItem(CURRENT_CHAT_KEY);
         createNewChat();
       }
-    } catch (error) {
-      console.error('Error clearing all history:', error);
+    } catch (err) {
+      console.error('Error clearing all history:', err);
     }
   }, [STORAGE_KEY, CURRENT_CHAT_KEY, createNewChat]);
-  
+
+  /**
+   * Send message
+   */
+  const sendMessage = useCallback(async (query) => {
+    if (!query.trim()) return;
+    
+    const socket = getSocket();
+    if (!socket) {
+      setError('Connection not established');
+      return;
+    }
+
+    const userMessage = {
+      id: `msg_${Date.now()}`,
+      role: 'user',
+      content: query,
+      timestamp: getTimestamp(),
+    };
+
+    setMessages(prev => [...prev, userMessage]);
+    setIsLoading(true);
+    setStreamingText('');
+    lastQueryRef.current = query;
+
+    let sessionId = currentChatIdRef.current;
+    if (!sessionId) {
+      sessionId = createNewChat();
+    }
+
+    // ── Get fresh location right before sending ──────────────────────────────
+    // location state may be null if geolocation hasn't resolved yet
+    const getFreshLocation = () =>
+      new Promise((resolve) => {
+        // If we already have a location from state, use it
+        if (location && location.lat && location.lng) {
+          resolve(location);
+          return;
+        }
+        // Otherwise try to get it fresh from browser
+        if (isEnabled && navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(
+            (pos) => resolve({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
+            () => resolve(null),
+            { timeout: 3000, maximumAge: 60000 }
+          );
+        } else {
+          resolve(null);
+        }
+      });
+
+    const currentLocation = await getFreshLocation();
+    console.log('[sendMessage] location being sent:', currentLocation);
+
+    socket.emit('chat:message', {
+      query,
+      language: localStorage.getItem('language') || 'en',
+      sessionId: sessionId,
+      token: sessionStorage.getItem('authToken'),
+      location: currentLocation,
+    });
+  }, [createNewChat, location, isEnabled]);
+
+  // Handle socket response events
+  useEffect(() => {
+    const socket = getSocket();
+    if (!socket) return;
+
+    const handleTyping = (data) => {
+       setIsTyping(data.isTyping);
+    };
+
+    const handleStream = (data) => {
+      setStreamingText(prev => prev + data.text);
+      setIsLoading(false); // Once streaming starts, we are no longer "loading" in the blocking sense
+      setIsTyping(true);
+    };
+
+    const handleComplete = (data) => {
+       const aiMessage = {
+        id: `msg_${Date.now()}`,
+        role: 'assistant',
+        content: data.answer,
+        timestamp: getTimestamp(),
+        citations: data.citations || [],
+        confidence: data.confidence || 1.0,
+      };
+
+      const targetSessionId = data.sessionId || currentChatIdRef.current;
+
+      setMessages(prev => [...prev, aiMessage]);
+      setStreamingText(''); // Clear streaming text
+      setIsLoading(false);
+      setIsTyping(false);
+      
+      // Update local chats list with messages
+      setChats(prev => {
+        const updated = prev.map(chat => {
+          if (chat.id === targetSessionId) {
+            return {
+              ...chat,
+              messages: [...chat.messages, { role: 'user', content: lastQueryRef.current }, aiMessage],
+              updatedAt: getTimestamp(),
+            };
+          }
+          return chat;
+        });
+        saveChats(updated);
+        return updated;
+      });
+
+      if (user) syncWithBackend();
+    };
+
+    const handleError = (data) => {
+      setError(data.error || 'Failed to process request');
+      setIsLoading(false);
+      setIsTyping(false);
+    };
+
+    socket.on('chat:typing', handleTyping);
+    socket.on('chat:stream', handleStream);
+    socket.on('chat:complete', handleComplete);
+    socket.on('chat:error', handleError);
+
+    return () => {
+      socket.off('chat:typing', handleTyping);
+      socket.off('chat:stream', handleStream);
+      socket.off('chat:complete', handleComplete);
+      socket.off('chat:error', handleError);
+    };
+  }, [user, saveChats, syncWithBackend]); // Removed currentChatId dependency to use ref
+
+  // Initialize and Sync on mount
+  useEffect(() => {
+    const socket = initializeSocket();
+    socket.on('connect', () => console.log('Socket connected'));
+    
+    loadChats();
+    if (user) syncWithBackend();
+
+    return () => {};
+  }, [user?.id, isAuthenticated, loadChats, syncWithBackend]);
+
   return {
     messages,
     isLoading,
@@ -431,8 +397,11 @@ socket.emit('chat:message', {
     sendMessage,
     clearChat,
     clearAllHistory,
+    location,
+    isLocationEnabled: isEnabled,
+    isLocationLoading: loading,
+    toggleLocation,
   };
 };
 
 export default useChat;
-

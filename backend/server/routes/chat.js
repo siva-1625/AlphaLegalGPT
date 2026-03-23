@@ -15,18 +15,38 @@ const router = express.Router();
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
-const getSystemPrompt = (languageCode) => {
+const getSystemPrompt = (languageCode, location) => {
   const isTamil = languageCode === 'ta';
   const defaultLanguage = isTamil ? "Tamil" : "English";
-  const fallbackMessage = isTamil 
+  const fallbackMessage = isTamil
     ? "மன்னிக்கவும், நான் ஒரு AI சட்ட உதவியாளர், என்னால் சட்டம் அல்லது சட்ட ரீதியான கேள்விகளுக்கு மட்டுமே உதவ முடியும்."
     : "I am sorry, but I am an AI Legal Assistant and I can only help with law or legal-related questions.";
+
+  let locationContext = "";
+  if (location && location.lat && location.lng) {
+    locationContext = `
+USER LOCATION: Latitude ${location.lat}, Longitude ${location.lng}
+The user HAS enabled location sharing. Your primary goal is to guide them to the ACTUAL physical offices where they can solve their legal issue.
+Whenever the user's question relates to a specific government service or legal process, you MUST provide a Google Maps search link for the relevant office nearby.
+
+Use these search templates (replace {office_name} with the type of office):
+- VAO Office (for certificates, land records, welfare schemes): https://www.google.com/maps/search/VAO+office/@${location.lat},${location.lng},15z
+- Revenue Inspector (RI) Office: https://www.google.com/maps/search/Revenue+Inspector+office/@${location.lat},${location.lng},15z
+- Taluk Office (for community/income certificates, general admin): https://www.google.com/maps/search/Taluk+Office/@${location.lat},${location.lng},15z
+- Sub-Registrar Office (for property registration, marriage registration): https://www.google.com/maps/search/Sub+Registrar+Office/@${location.lat},${location.lng},15z
+- District Court: https://www.google.com/maps/search/District+Court/@${location.lat},${location.lng},15z
+- Police Station (for FIR, complaints): https://www.google.com/maps/search/Police+Station/@${location.lat},${location.lng},15z
+- District Collectorate (for major grievances): https://www.google.com/maps/search/District+Collectorate/@${location.lat},${location.lng},15z
+
+Always tell the user: "You can find the nearest [Office Name] here: [Link]"
+`;
+  }
 
   return `You are AI LegalGPT, a professional Indian legal assistant.
 Your scope is STRICTLY LIMITED to law, legal procedures, Indian statutes, and legal advice.
 If a user asks a question that is NOT related to law or legal matters (e.g., general knowledge, personal advice, random facts, jokes, or non-legal topics), you MUST NOT answer it.
 Instead, you must respond ONLY with the following exact message: "${fallbackMessage}"
-
+${locationContext}
 IMPORTANT: 
 1. You MUST answer strictly in the ${defaultLanguage} language.
 2. If the user specifically requests a different language (e.g., "in Tamil", "in English"), you can use that language.
@@ -37,17 +57,17 @@ IMPORTANT:
 // POST /api/chat
 router.post('/', async (req, res) => {
   try {
-    const { query, language } = req.body;
-    
+    const { query, language, location } = req.body;
+
     if (!query) {
       return res.status(400).json({ error: 'Query is required' });
     }
-    
+
     console.log(`Processing AI LegalGPT request: ${query} (Language: ${language})`);
-    
-    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
-    const fullPrompt = `${getSystemPrompt(language)}\n\nUser Question:\n${query}`;
-    
+
+    const model = genAI.getGenerativeModel({ model: "gemini-flash-latest" });
+    const fullPrompt = `${getSystemPrompt(language, location)}\n\nUser Question:\n${query}`;
+
     const result = await model.generateContent(fullPrompt);
     const response = await result.response;
     const answer = response.text();
@@ -63,14 +83,14 @@ router.post('/', async (req, res) => {
     const userId = req.user.id;
     const sessionId = req.body.sessionId || 'default';
     const existingChat = await Chat.findSession(userId, sessionId);
-    
+
     const userMessage = {
       id: `msg_${Date.now()}`,
       role: 'user',
       content: query,
       timestamp: new Date().toISOString()
     };
-    
+
     const aiMessage = {
       id: `msg_${Date.now() + 1}`,
       role: 'assistant',
@@ -79,7 +99,7 @@ router.post('/', async (req, res) => {
     };
 
     const updatedMessages = [...(existingChat?.messages || []), userMessage, aiMessage];
-    
+
     // Auto-generate title if it's the first message
     let title = existingChat?.title || 'New Chat';
     if (title === 'New Chat' || !existingChat) {
@@ -94,7 +114,7 @@ router.post('/', async (req, res) => {
 
   } catch (error) {
     console.error('Chat error:', error);
-    res.status(500).json({ 
+    res.status(500).json({
       error: "Failed to get response from AI LegalGPT",
       details: error.message
     });
@@ -149,17 +169,16 @@ router.delete('/history/:sessionId', async (req, res) => {
     res.status(500).json({ error: 'Failed to delete session' });
   }
 });
-
 /**
  * Handle WebSocket chat events
  */
 export const setupSocketHandlers = (io) => {
   io.on('connection', (socket) => {
     console.log('Client connected:', socket.id);
-    
+
     socket.on('chat:message', async (data) => {
-      const { query, language, sessionId, token } = data;
-      
+      const { query, language, sessionId, token, location } = data;
+
       let userId = 'anonymous';
       if (token) {
         try {
@@ -169,69 +188,75 @@ export const setupSocketHandlers = (io) => {
           console.error('Socket token verification failed:', err);
         }
       }
-      
+
       try {
         socket.emit('chat:typing', { isTyping: true });
-        
-        const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
-        const fullPrompt = `${getSystemPrompt(language)}\n\nUser Question:\n${query}`;
-        
-        const result = await model.generateContent(fullPrompt);
-        const response = await result.response;
-        const answer = response.text();
-        
+
+        const model = genAI.getGenerativeModel({ model: "gemini-flash-latest" });
+        const fullPrompt = `${getSystemPrompt(language, location)}\n\nUser Question:\n${query}`;
+
+        // Use streaming for better responsiveness
+        const result = await model.generateContentStream(fullPrompt);
+
+        let fullResponseText = "";
+        for await (const chunk of result.stream) {
+          const chunkText = chunk.text();
+          fullResponseText += chunkText;
+          socket.emit('chat:stream', { text: chunkText });
+        }
+
         socket.emit('chat:complete', {
-          answer,
+          answer: fullResponseText,
+          sessionId: sessionId || 'default',
           citations: [],
           section_title: "",
           confidence: 1.0,
         });
 
-        // Save to history
+        // Save to history in background
         if (userId !== 'anonymous') {
           const sId = sessionId || 'default';
           const existingChat = await Chat.findSession(userId, sId);
-          
+
+          let title = existingChat?.title || 'New Chat';
+          if (title === 'New Chat' || !existingChat) {
+            title = query.slice(0, 30) + (query.length > 30 ? '...' : '');
+          }
+
           const userMessage = {
             id: `msg_${Date.now()}`,
             role: 'user',
             content: query,
             timestamp: new Date().toISOString()
           };
-          
+
           const aiMessage = {
             id: `msg_${Date.now() + 1}`,
             role: 'assistant',
-            content: answer,
+            content: fullResponseText,
             timestamp: new Date().toISOString()
           };
 
           const updatedMessages = [...(existingChat?.messages || []), userMessage, aiMessage];
-          
-          let title = existingChat?.title || 'New Chat';
-          if (title === 'New Chat' || !existingChat) {
-            title = query.slice(0, 30) + (query.length > 30 ? '...' : '');
-          }
-
           await Chat.save(userId, {
             id: sId,
             title,
             messages: updatedMessages
           });
         }
-        
+
         socket.emit('chat:typing', { isTyping: false });
-        
+
       } catch (error) {
-        console.error('Socket chat error:', error);
-        socket.emit('chat:error', { 
-          error: error.message || 'Failed to process request',
-          details: error.response?.data?.error || null
+        console.error('Socket streaming error:', error);
+        socket.emit('chat:error', {
+          error: 'AI is taking too long or quota exceeded. Please try again in a few seconds.',
+          details: error.message
         });
         socket.emit('chat:typing', { isTyping: false });
       }
     });
-    
+
     socket.on('disconnect', () => {
       console.log('Client disconnected:', socket.id);
     });

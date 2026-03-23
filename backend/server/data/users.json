@@ -66,5 +66,13 @@
     "otp": "492241",
     "otpExpiry": 1774180977162,
     "createdAt": "2026-03-22T11:52:57.160Z"
+  },
+  {
+    "_id": "j1mmp11j9",
+    "name": "Saravana",
+    "email": "prabhusaravana764@gmail.com",
+    "password": "$2a$10$6ZpTc3u7TlAWGPIolet0OeMxtQH/I16kjte89JqsmA.3wbQn2ujGO",
+    "isVerified": true,
+    "createdAt": "2026-03-23T05:44:58.723Z"
   }
 ]

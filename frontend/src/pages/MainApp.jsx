@@ -5,6 +5,7 @@ import Sidebar from './Sidebar';
 import ChatWindow from './ChatWindow';
 import ChatInput from '../components/ChatInput';
 import SettingsModal from '../components/SettingsModal';
+import NearbyOfficesSidebar from '../components/NearbyOfficesSidebar';
 import useChat from '../hooks/useChat';
 import { checkHealth } from '../services/api';
 
@@ -15,6 +16,7 @@ function MainApp() {
   const [isCheckingHealth, setIsCheckingHealth] = useState(true);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [inputValue, setInputValue] = useState('');
+  const [isNearbyOpen, setIsNearbyOpen] = useState(false);
 
   const {
     messages,
@@ -30,6 +32,10 @@ function MainApp() {
     sendMessage,
     clearChat,
     clearAllHistory,
+    location,
+    isLocationEnabled,
+    isLocationLoading,
+    toggleLocation,
   } = useChat();
 
   // Check backend health on mount
@@ -71,15 +77,27 @@ function MainApp() {
     setInputValue('');
   }, [currentChatId]);
 
+  // Auto-open sidebar when location is enabled, close when disabled
+  useEffect(() => {
+    if (isLocationEnabled) {
+      setIsNearbyOpen(true);
+    } else {
+      setIsNearbyOpen(false);
+    }
+  }, [isLocationEnabled]);
+
+
+
   // Handle sending message
   const handleSendMessage = async (content) => {
     setInputValue('');
+    setIsNearbyOpen(false);
     await sendMessage(content);
   };
 
   return (
     <div className="flex h-screen bg-background overflow-hidden">
-      {/* Sidebar */}
+      {/* Left Sidebar */}
       <Sidebar
         chats={chats}
         currentChatId={currentChatId}
@@ -93,7 +111,10 @@ function MainApp() {
       />
 
       {/* Main Content */}
-      <main className="flex-1 ml-[260px] flex flex-col h-full">
+      <main
+        className="flex-1 ml-[260px] flex flex-col h-full transition-all duration-300"
+        style={{ marginRight: isNearbyOpen ? '300px' : '0' }}
+      >
         {/* Header */}
         <motion.header
           initial={{ opacity: 0, y: -20 }}
@@ -137,8 +158,20 @@ function MainApp() {
           onSendMessage={handleSendMessage}
           isLoading={isLoading}
           disabled={!isConnected || isLoading}
+          isLocationEnabled={isLocationEnabled}
+          isLocationLoading={isLocationLoading}
+          onLocationToggle={toggleLocation}
         />
       </main>
+
+      {/* Right Nearby Offices Sidebar */}
+      <NearbyOfficesSidebar
+        query={messages.filter(m => m.role === 'user').slice(-1)[0]?.content || ''}
+        location={location}
+        isOpen={isNearbyOpen}
+        onClose={() => setIsNearbyOpen(false)}
+        isLocationEnabled={isLocationEnabled}
+      />
 
       {/* Error Toast */}
       {error && (
@@ -153,9 +186,9 @@ function MainApp() {
       )}
 
       {/* Settings Modal */}
-      <SettingsModal 
-        isOpen={isSettingsOpen} 
-        onClose={() => setIsSettingsOpen(false)} 
+      <SettingsModal
+        isOpen={isSettingsOpen}
+        onClose={() => setIsSettingsOpen(false)}
       />
     </div>
   );

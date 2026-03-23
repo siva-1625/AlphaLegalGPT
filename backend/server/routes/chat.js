@@ -17,10 +17,9 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 const getSystemPrompt = (languageCode, location) => {
   const isTamil = languageCode === 'ta';
-  const defaultLanguage = isTamil ? "Tamil" : "English";
-  const fallbackMessage = isTamil
-    ? "மன்னிக்கவும், நான் ஒரு AI சட்ட உதவியாளர், என்னால் சட்டம் அல்லது சட்ட ரீதியான கேள்விகளுக்கு மட்டுமே உதவ முடியும்."
-    : "I am sorry, but I am an AI Legal Assistant and I can only help with law or legal-related questions.";
+  // Standardizing to English for the AI expert as per user request
+  const defaultLanguage = "English";
+  const fallbackMessage = "I am sorry, but I am an AI Legal Assistant and I can only help with law or legal-related questions.";
 
   let locationContext = "";
   if (location && location.lat && location.lng) {

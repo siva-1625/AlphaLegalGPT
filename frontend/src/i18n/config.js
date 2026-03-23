@@ -91,12 +91,24 @@ const resources = {
       // Footer
       poweredBy: 'Powered by',
       legalDisclaimer: 'This is an AI assistant and not a substitute for professional legal advice.',
+      
+      // Boost Features
+      legalReferences: 'Legal References',
+      quickDraft: 'Quick Draft',
+      rentalAgreement: 'Rental Agreement',
+      legalNotice: 'Legal Notice',
+      affidavit: 'Affidavit',
+      openLaws: 'Open Law References',
+      will: 'Will (Testament)',
+      powerOfAttorney: 'Power of Attorney',
+      consumerComplaint: 'Consumer Complaint',
+      promissoryNote: 'Promissory Note',
     },
   },
   ta: {
     translation: {
       // App
-      appName: 'அல்பாஎல்கல்ஜிபிடி',
+      appName: 'AlphaLegalGPT',
       appSubtitle: 'AI சட்ட உதவியாளர்',
       
       // Auth
@@ -155,7 +167,7 @@ const resources = {
       locationOff: 'இருப்பிடம் ஆஃப்',
       
       // Welcome
-      welcomeTitle: 'அல்பாஎல்கல்ஜிபிடி-க்கு வரவேற்கிறோம்',
+      welcomeTitle: 'AlphaLegalGPT-க்கு வரவேற்கிறோம்',
       welcomeMessage: 'உங்களது விரிவான AI சட்ட உதவியாளர். இந்திய அரசியலமைப்பு, சிவில் நடைமுறைகள், தண்டனைச் சட்டங்கள், கார்ப்பரேட் சட்டம், சட்ட வரைவுகள் மற்றும் வழக்கு பகுப்பாய்வு உள்ளிட்ட இந்திய சட்டத்தின் நுணுக்கங்களை உங்களுக்கு வழிகாட்ட நான் தயாராக உள்ளேன்.',
       exampleQuestionsText: 'உதாரணமான கேள்விகள்:',
       examples: [
@@ -182,6 +194,18 @@ const resources = {
       // Footer
       poweredBy: 'இயக்கப்படுகிறது',
       legalDisclaimer: 'இது ஒரு AI உதவியாளர் மற்றும் தொழில்முறை சட்ட ஆலோசனைக்கு மாற்று அல்ல.',
+      
+      // Boost Features
+      legalReferences: 'சட்டக் குறிப்புகள்',
+      quickDraft: 'விரைவு வரைவு',
+      rentalAgreement: 'வாடகை ஒப்பந்தம்',
+      legalNotice: 'சட்ட நோட்டீஸ்',
+      affidavit: 'உறுதிமொழிப் பத்திரம்',
+      openLaws: 'சட்டக் குறிப்புகள்',
+      will: 'உயில் (Will)',
+      powerOfAttorney: 'பவர் ஆஃப் அட்டர்னி',
+      consumerComplaint: 'நுகர்வோர் புகார்',
+      promissoryNote: 'புராமிசரி நோட்',
     },
   },
 };

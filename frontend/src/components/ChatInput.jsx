@@ -11,7 +11,7 @@ import {
 import { uploadDocument } from '../services/api';
 
 const ChatInput = ({ value: message, onChange: setMessage, onSendMessage, isLoading, disabled, isLocationEnabled, isLocationLoading, onLocationToggle }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const textareaRef = useRef(null);
   const fileInputRef = useRef(null);
   const recognitionRef = useRef(null);
@@ -58,15 +58,39 @@ const ChatInput = ({ value: message, onChange: setMessage, onSendMessage, isLoad
       setIsRecording(false);
     } else {
       if (recognitionRef.current) {
-        // Use selected language for speech recognition
-        const lang = localStorage.getItem('language') === 'ta' ? 'ta-IN' : 'en-US';
-        recognitionRef.current.lang = lang;
+        // Use current app language for speech recognition
+        const currentLang = i18n.language === 'ta' ? 'ta-IN' : 'en-US';
+        recognitionRef.current.lang = currentLang;
         recognitionRef.current.start();
         setIsRecording(true);
       } else {
         alert('Speech recognition is not supported in this browser.');
       }
     }
+  };
+
+  const handleTemplateClick = (type) => {
+    if (disabled) return;
+    const isTamil = i18n.language && i18n.language.startsWith('ta');
+    const prompts = {
+      rental: isTamil ? 'வாடகை ஒப்பந்தம் (Rental Agreement) மாதிரி ஒன்றை உருவாக்கி தாருங்கள்.' : 'Please draft a basic Rental Agreement template.',
+      notice: isTamil ? 'தவறான விளம்பரத்திற்கு எதிராக ஒரு சட்ட நோட்டீஸ் (Legal Notice) மாதிரி ஒன்றை உருவாக்கி தாருங்கள்.' : 'Please draft a standard Legal Notice template for a consumer complaint.',
+      affidavit: isTamil ? 'பெயர் மாற்றத்திற்கான ஒரு உறுதிமொழிப் பத்திரம் (Affidavit) மாதிரி ஒன்றை உருவாக்கி தாருங்கள்.' : 'Please draft a basic Affidavit template for name change.',
+      openLaws: isTamil ? 'சட்டக் குறிப்புகள் பற்றி எனக்குத் தெரியப்படுத்துங்கள்.' : 'Tell me about open law references.',
+      will: isTamil ? 'சொத்து பகிர்விற்கான ஒரு உயில் (Will) மாதிரி ஒன்றை உருவாக்கி தாருங்கள்.' : 'Please draft a basic Will (testament) template for property distribution.',
+      poa: isTamil ? 'சட்டப்பூர்வமான பவர் ஆஃப் அட்டர்னி (Power of Attorney) மாதிரி ஒன்றை உருவாக்கி தாருங்கள்.' : 'Please draft a General Power of Attorney template.',
+      consumer: isTamil ? 'நுகர்வோர் புகார் (Consumer Complaint) மாதிரி ஒன்றை உருவாக்கி தாருங்கள்.' : 'Please draft a Consumer Complaint template.',
+      note: isTamil ? 'புராமிசரி நோட் (Promissory Note) மாதிரி ஒன்றை உருவாக்கி தாருங்கள்.' : 'Please draft a basic Promissory Note template.',
+    };
+    
+    const selectedPrompt = prompts[type];
+    // First set the value so the user sees it
+    setMessage(selectedPrompt);
+    
+    // Then trigger send after a tiny delay for visual sync
+    setTimeout(() => {
+      onSendMessage(selectedPrompt);
+    }, 100);
   };
 
   const handleDocumentClick = () => {
@@ -123,6 +147,35 @@ const ChatInput = ({ value: message, onChange: setMessage, onSendMessage, isLoad
       className="sticky bottom-0 bg-background/80 backdrop-blur-lg border-t border-border p-4"
     >
       <div className="max-w-[900px] mx-auto">
+        
+        {/* Quick Templates Bar */}
+        <div className="flex flex-wrap items-center gap-2 mb-3 px-1 overflow-x-auto no-scrollbar">
+          <span className="text-[10px] font-bold text-text-secondary uppercase tracking-widest mr-1">
+            {t('quickDraft') || 'Quick Draft'}:
+          </span>
+          {[
+            { id: 'rental', label: t('rentalAgreement'), icon: '🏠' },
+            { id: 'notice', label: t('legalNotice'), icon: '✉️' },
+            { id: 'affidavit', label: t('affidavit'), icon: '📜' },
+            { id: 'will', label: t('will'), icon: '✍️' },
+            { id: 'poa', label: t('powerOfAttorney'), icon: '🤝' },
+            { id: 'consumer', label: t('consumerComplaint'), icon: '🛍️' },
+            { id: 'note', label: t('promissoryNote'), icon: '💵' },
+          ].map((item) => (
+            <motion.button
+              key={item.id}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => handleTemplateClick(item.id)}
+              disabled={disabled}
+              className="px-3 py-1.5 bg-sidebar hover:bg-hover-bg border border-border rounded-full text-xs font-medium text-text-primary flex items-center gap-2 transition-colors whitespace-nowrap disabled:opacity-50"
+            >
+              <span>{item.icon}</span>
+              {item.label}
+            </motion.button>
+          ))}
+        </div>
+
         <form
           onSubmit={handleSubmit}
           className="relative flex items-end gap-2 bg-input-bg rounded-2xl border border-border focus-within:border-accent/50 transition-colors"
@@ -190,17 +243,30 @@ const ChatInput = ({ value: message, onChange: setMessage, onSendMessage, isLoad
             </div>
 
             {/* Voice Input */}
-            <button
-              type="button"
-              onClick={toggleRecording}
-              disabled={disabled}
-              className={`p-2.5 rounded-xl transition-colors ${
-                isRecording ? 'text-red-500 bg-red-500/10 animate-pulse' : 'text-text-secondary hover:text-text-primary hover:bg-hover-bg'
-              } disabled:opacity-40 disabled:cursor-not-allowed`}
-              title={t('voiceInput')}
-            >
-              <FiMic className="w-5 h-5" />
-            </button>
+            <div className="relative">
+              <button
+                type="button"
+                onClick={toggleRecording}
+                disabled={disabled}
+                className={`p-2.5 rounded-xl transition-all duration-300 ${
+                  isRecording 
+                    ? 'text-white bg-red-500 shadow-[0_0_15px_rgba(239,68,68,0.5)] scale-110' 
+                    : 'text-text-secondary hover:text-text-primary hover:bg-hover-bg'
+                } disabled:opacity-40 disabled:cursor-not-allowed`}
+                title={t('voiceInput')}
+              >
+                {isRecording ? (
+                  <FiMic className="w-5 h-5 animate-bounce" />
+                ) : (
+                  <FiMic className="w-5 h-5" />
+                )}
+              </button>
+              {isRecording && (
+                <span className="absolute -top-10 left-1/2 -translate-x-1/2 px-2 py-1 bg-red-500 text-white text-[10px] font-bold rounded-md animate-pulse whitespace-nowrap">
+                  Listening...
+                </span>
+              )}
+            </div>
 
             {/* PDF Upload */}
             <button

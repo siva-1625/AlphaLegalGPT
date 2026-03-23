@@ -102,27 +102,6 @@
     "updatedAt": "2026-03-23T05:22:38.581Z"
   },
   {
-    "id": "chat_1774243840484_vriu7l3nv",
-    "title": "How to get an income certifica...",
-    "messages": [
-      {
-        "id": "msg_1774243851864",
-        "role": "user",
-        "content": "How to get an income certificate?\n\n",
-        "timestamp": "2026-03-23T05:30:51.864Z"
-      },
-      {
-        "id": "msg_1774243851865",
-        "role": "assistant",
-        "content": "An Income Certificate is an official document issued by the State Government that certifies the annual income of an individual or their family from all sources. In India, this certificate is usually issued by the Revenue Department (Tehsildar or District Magistrate office).\n\nHere is the general procedure to obtain an income certificate in India:\n\n### 1. Where to Apply\n*   **Online:** Most states in India offer this service through their official **\"e-District\"** or **\"Service Plus\"** portals (e.g., e-District Delhi, MeeSeva in Andhra Pradesh/Telangana, or Sakala in Karnataka).\n*   **Offline:** You can visit the local **Tehsildar’s office**, Revenue Office, or Common Service Centres (CSC) like Jan Seva Kendras.\n\n### 2. Documents Required\nWhile requirements may vary slightly by state, the standard documents include:\n*   **Identity Proof:** Aadhaar Card, Voter ID, or PAN Card.\n*   **Address Proof:** Ration Card, Electricity Bill, or Water Bill.\n*   **Income Proof:** \n    *   For salaried employees: Form 16 or Salary Slips.\n    *   For non-salaried/self-employed: Income Tax Returns (ITR) or an **Affidavit** declaring income.\n    *   For farmers: Land records (Patta/Chitta).\n*   **Passport-size photographs.**\n\n### 3. Step-by-Step Process\n1.  **Obtain the Application Form:** Download it from the state portal or collect it from the local Revenue Office.\n2.  **Submit the Form:** Fill in the details and attach self-attested copies of the required documents.\n3.  **Verification:** After submission, a local Revenue Official (such as a Patwari, Village Administrative Officer (VAO), or Revenue Inspector) may conduct a field inquiry to verify your income and residence.\n4.  **Issuance:** Once the verification report is submitted and approved by the Tehsildar or Sub-Divisional Magistrate (SDM), the certificate is issued.\n\n### 4. Processing Time and Validity\n*   **Time:** It usually takes **7 to 15 days** to receive the certificate after successful verification.\n*   **Validity:** An income certificate is generally valid for **one financial year**. You must renew it after the expiry date mentioned on the document.\n\n**Legal Note:** Providing false information or forged documents to obtain an income certificate is a punishable offense under the Indian Penal Code (IPC) for fraud and misrepresentation.",
-        "timestamp": "2026-03-23T05:30:51.864Z"
-      }
-    ],
-    "userId": "ut4qfxa3v",
-    "createdAt": "2026-03-23T05:30:51.869Z",
-    "updatedAt": "2026-03-23T05:30:51.869Z"
-  },
-  {
     "id": "chat_1774244739095_e9w2jne9j",
     "title": "how to apply income certicate?",
     "messages": [

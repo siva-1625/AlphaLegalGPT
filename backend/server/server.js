@@ -13,6 +13,7 @@ import { dirname, join } from 'path';
 import chatRoutes, { setupSocketHandlers } from './routes/chat.js';
 import authRoutes from './routes/auth.js';
 import uploadRoutes from './routes/upload.js';
+import lawsRoutes from './routes/laws.js';
 import { User } from './models/User.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -77,6 +78,7 @@ const authMiddleware = (req, res, next) => {
 
 // API Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/laws', lawsRoutes);
 app.use('/api/chat', authMiddleware, chatRoutes);
 app.use('/api/upload', authMiddleware, uploadRoutes);
 
@@ -91,6 +93,13 @@ app.get('/api/health', (req, res) => {
 
 // Setup WebSocket handlers
 setupSocketHandlers(io);
+
+// Global Error Handler
+app.use((err, req, res, next) => {
+  console.error(`❌ Backend Error: ${err.message}`);
+  console.error(err.stack);
+  res.status(500).json({ error: 'Internal Server Error', details: err.message });
+});
 
 // Initialize application
 const initializeApp = async () => {

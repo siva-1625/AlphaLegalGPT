@@ -11,51 +11,57 @@ const OFFICE_ICONS = {
   'District Court': '⚖️',
   'Police Station': '🚔',
   'District Collectorate': '🏛',
+  'RTO Office': '🚗',
+  'Municipality Office': '🏢',
+  'Consumer Court': '🛍️',
+  'Labour Court': '👷',
 };
 
-const NearbyOfficesSidebar = ({ query, location, isOpen, onClose, isLocationEnabled }) => {
+const NearbyOfficesSidebar = ({ query, response, location, isOpen, onClose, isLocationEnabled }) => {
   const { t } = useTranslation();
 
-  // ── Compute offices REACTIVELY from query + location ─────────────────────
+  // ── Compute offices REACTIVELY from query + AI response ──────────────────
   const offices = React.useMemo(() => {
-    // If location is not available, return empty so it shows "Location not enabled" state
     if (!isLocationEnabled || !location || !location.lat || !location.lng) return [];
     
     const lat = location.lat;
     const lng = location.lng;
-    const q = (query || '').toLowerCase();
+    const combinedText = ((query || '') + ' ' + (response || '')).toLowerCase();
 
-    // Helper to build office objects
     const buildOffice = (label, searchName) => ({
       label,
       mapsSearchUrl: `https://www.google.com/maps/search/${encodeURIComponent(searchName)}/@${lat},${lng},15z`,
       directionsUrl: `https://www.google.com/maps/dir/?api=1&origin=${lat},${lng}&destination=${encodeURIComponent(searchName)}&travelmode=driving`,
     });
 
-    // Office Keyword Rules (Tamil + English)
     const rules = [
-      { label: 'VAO Office', searchName: 'VAO office', kw: ['vao', 'village', 'nativity', 'community', 'income', 'patta', 'chitta', 'land', 'vivasayam', 'jaathi', 'family', 'ration'] },
-      { label: 'Revenue Inspector Office', searchName: 'Revenue Inspector office', kw: ['revenue inspector', 'ri office', 'patta transfer', 'mutation', 'survey'] },
-      { label: 'Taluk Office', searchName: 'Taluk Office', kw: ['taluk', 'tahsildar', 'thasildar', 'certificate', 'obc', 'mbc', 'sc', 'st', 'bc', 'legal heir'] },
-      { label: 'Sub Registrar Office', searchName: 'Sub Registrar Office', kw: ['property', 'sale deed', 'marriage', 'registration', 'encumbrance', 'ec', 'stamp duty'] },
-      { label: 'District Court', searchName: 'District Court', kw: ['court', 'case', 'lawsuit', 'bail', 'judge', 'advocate', 'lawyer', 'divorce', 'legal notice'] },
-      { label: 'Police Station', searchName: 'Police Station', kw: ['fir', 'police', 'complaint', 'theft', 'robbery', 'accident', 'fraud', 'missing'] },
-      { label: 'District Collectorate', searchName: 'District Collectorate', kw: ['collector', 'grievance', 'rti', 'relief', 'government scheme'] },
+      { label: 'VAO Office', searchName: 'VAO office', kw: ['vao', 'village', 'nativity', 'community', 'income', 'patta', 'chitta', 'land', 'vivasayam', 'jaathi', 'family', 'ration', 'villangam'] },
+      { label: 'Revenue Inspector Office', searchName: 'Revenue Inspector office', kw: ['revenue inspector', 'ri office', 'patta transfer', 'mutation', 'survey', 'surveyor'] },
+      { label: 'Taluk Office', searchName: 'Taluk Office', kw: ['taluk', 'tahsildar', 'thasildar', 'certificate', 'obc', 'mbc', 'sc', 'st', 'bc', 'legal heir', 'domicile', 'certificates'] },
+      { label: 'Sub Registrar Office', searchName: 'Sub Registrar Office', kw: ['sub registrar', 'property', 'sale deed', 'marriage', 'registration', 'encumbrance', 'ec', 'stamp duty', 'registrations'] },
+      { label: 'District Court', searchName: 'District Court', kw: ['district court', 'court', 'case', 'lawsuit', 'bail', 'judge', 'advocate', 'lawyer', 'divorce', 'legal notice', 'litigation', 'justice'] },
+      { label: 'Police Station', searchName: 'Police Station', kw: ['police', 'fir', 'complaint', 'theft', 'robbery', 'accident', 'fraud', 'missing', 'arrest', 'crime', 'pc', 'stations'] },
+      { label: 'District Collectorate', searchName: 'District Collectorate', kw: ['collectorate', 'collector', 'grievance', 'rti', 'relief', 'dm office', 'complaints'] },
+      { label: 'RTO Office', searchName: 'RTO office', kw: ['rto', 'driving licence', 'vehicle', 'registration', 'dl', 'rc book', 'transport', 'license'] },
+      { label: 'Municipality Office', searchName: 'Municipality Office', kw: ['municipality', 'corporation', 'birth certificate', 'death certificate', 'property tax', 'water tax', 'certificate'] },
+      { label: 'Consumer Court', searchName: 'Consumer Court', kw: ['consumer', 'fraud', 'product', 'service', 'compensation', 'complaint', 'grievance'] },
+      { label: 'Labour Court', searchName: 'Labour Court', kw: ['labour', 'worker', 'employment', 'salary', 'pf', 'esi', 'dismissal', 'workers'] },
     ];
 
     const matched = [];
     const seen = new Set();
     
-    // First, find matches from keywords
+    // 1. First, find SPECIFIC match from query/response keywords
     for (const rule of rules) {
-      if (rule.kw.some(k => q.includes(k))) {
+      if (rule.kw.some(k => combinedText.includes(k))) {
         seen.add(rule.label);
         matched.push(buildOffice(rule.label, rule.searchName));
       }
     }
 
-    // Default Fallback: Always ensure 3-4 offices if location is valid
-    // This ensures the sidebar is NEVER empty as requested by the user
+    // 2. IMMEDIATE FEEDBACK: If fewer than 4 offices match, fill with general legal offices
+    // This ensures that clicking the location icon IMMEDIATELY shows directions
+    // without waiting for a question.
     const defaults = [
       { label: 'Taluk Office', searchName: 'Taluk Office' },
       { label: 'Police Station', searchName: 'Police Station' },
@@ -71,8 +77,8 @@ const NearbyOfficesSidebar = ({ query, location, isOpen, onClose, isLocationEnab
       }
     }
 
-    return matched;
-  }, [query, location, isLocationEnabled]);
+    return matched.slice(0, 4);
+  }, [query, response, location, isLocationEnabled]);
 
   return (
     <AnimatePresence>

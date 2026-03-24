@@ -17,11 +17,7 @@ async function listModels() {
       console.log('No models found. Response:', JSON.stringify(data, null, 2));
       return;
     }
-    const embeddingModels = data.models.filter(m => 
-      m.supportedGenerationMethods.includes('embedContent') || 
-      m.supportedGenerationMethods.includes('batchEmbedContents')
-    );
-    console.log('Available Embedding Models:', JSON.stringify(embeddingModels, null, 2));
+    console.log('Available Models:', JSON.stringify(data.models, null, 2));
   } catch (error) {
     console.error('Error listing models:', error);
   }

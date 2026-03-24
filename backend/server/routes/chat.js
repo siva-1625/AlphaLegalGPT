@@ -13,13 +13,29 @@ dotenv.config({ path: join(__dirname, '../../.env') });
 
 const router = express.Router();
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+const getGenAI = () => {
+  // Explicitly reload .env with override to ensure any manual changes are picked up immediately
+  dotenv.config({ path: join(__dirname, '../../.env'), override: true });
+  
+  const apiKey = process.env.GEMINI_API_KEY?.trim();
+  if (!apiKey) {
+    console.error('❌ Chat API: GEMINI_API_KEY is missing in .env!');
+  } else {
+    console.log(`🔑 Chat API: Using key starting with: ${apiKey.slice(0, 10)}... (Reloaded)`);
+  }
+  return new GoogleGenerativeAI(apiKey || '');
+};
 
 const getSystemPrompt = (languageCode, location) => {
   const isTamil = languageCode === 'ta';
   // Standardizing to English for the AI expert as per user request
   const defaultLanguage = "English";
   const fallbackMessage = "I am sorry, but I am an AI Legal Assistant and I can only help with law or legal-related questions.";
+
+  const distanceConstraint = `
+STRICT CONSTRAINT: You MUST only suggest offices within a 1 meter to 10 km radius. Do NOT provide "long directions" (beyond 10km). If an office is likely further away, inform the user you cannot find any within the 10km limit.
+Always add a note: "Searching for offices within a 10 km radius..." when providing these links.
+`;
 
   let locationContext = "";
   if (location && location.lat && location.lng) {
@@ -28,16 +44,25 @@ USER LOCATION: Latitude ${location.lat}, Longitude ${location.lng}
 The user HAS enabled location sharing. Your primary goal is to guide them to the ACTUAL physical offices where they can solve their legal issue.
 Whenever the user's question relates to a specific government service or legal process, you MUST provide a Google Maps search link for the relevant office nearby.
 
-Use these search templates (replace {office_name} with the type of office):
-- VAO Office (for certificates, land records, welfare schemes): https://www.google.com/maps/search/VAO+office/@${location.lat},${location.lng},15z
-- Revenue Inspector (RI) Office: https://www.google.com/maps/search/Revenue+Inspector+office/@${location.lat},${location.lng},15z
-- Taluk Office (for community/income certificates, general admin): https://www.google.com/maps/search/Taluk+Office/@${location.lat},${location.lng},15z
-- Sub-Registrar Office (for property registration, marriage registration): https://www.google.com/maps/search/Sub+Registrar+Office/@${location.lat},${location.lng},15z
-- District Court: https://www.google.com/maps/search/District+Court/@${location.lat},${location.lng},15z
-- Police Station (for FIR, complaints): https://www.google.com/maps/search/Police+Station/@${location.lat},${location.lng},15z
-- District Collectorate (for major grievances): https://www.google.com/maps/search/District+Collectorate/@${location.lat},${location.lng},15z
+${distanceConstraint}
 
-Always tell the user: "You can find the nearest [Office Name] here: [Link]"
+Use these search templates (replace {office_name} with the type of office):
+- VAO Office: https://www.google.com/maps/search/VAO+office/@${location.lat},${location.lng},13z
+- Revenue Inspector (RI) Office: https://www.google.com/maps/search/Revenue+Inspector+office/@${location.lat},${location.lng},13z
+- Taluk Office: https://www.google.com/maps/search/Taluk+Office/@${location.lat},${location.lng},13z
+- Sub-Registrar Office: https://www.google.com/maps/search/Sub+Registrar+Office/@${location.lat},${location.lng},13z
+- District Court: https://www.google.com/maps/search/District+Court/@${location.lat},${location.lng},13z
+- Police Station: https://www.google.com/maps/search/Police+Station/@${location.lat},${location.lng},13z
+- District Collectorate: https://www.google.com/maps/search/District+Collectorate/@${location.lat},${location.lng},13z
+
+Always tell the user: "You can find the nearest [Office Name] within 10 km here: [Link]"
+`;
+  } else {
+    locationContext = `
+USER LOCATION: [NOT PROVIDED]
+The user has NOT enabled location sharing or it is unavailable.
+${distanceConstraint}
+If the user asks for directions or nearby offices, you MUST NOT guess any address. Instead, politely ask the user to enable their location using the map icon in the chat input to find offices within a 10km radius.
 `;
   }
 
@@ -64,6 +89,7 @@ router.post('/', async (req, res) => {
 
     console.log(`Processing AI LegalGPT request: ${query} (Language: ${language})`);
 
+    const genAI = getGenAI();
     const model = genAI.getGenerativeModel({ model: "gemini-flash-latest" });
     const fullPrompt = `${getSystemPrompt(language, location)}\n\nUser Question:\n${query}`;
 
@@ -191,6 +217,7 @@ export const setupSocketHandlers = (io) => {
       try {
         socket.emit('chat:typing', { isTyping: true });
 
+        const genAI = getGenAI();
         const model = genAI.getGenerativeModel({ model: "gemini-flash-latest" });
         const fullPrompt = `${getSystemPrompt(language, location)}\n\nUser Question:\n${query}`;
 
@@ -247,9 +274,13 @@ export const setupSocketHandlers = (io) => {
         socket.emit('chat:typing', { isTyping: false });
 
       } catch (error) {
-        console.error('Socket streaming error:', error);
+        console.error('Socket streaming error detailed:', {
+          message: error.message,
+          status: error.status,
+          details: error.errorDetails
+        });
         socket.emit('chat:error', {
-          error: 'AI is taking too long or quota exceeded. Please try again in a few seconds.',
+          error: `AI Error: ${error.message}`,
           details: error.message
         });
         socket.emit('chat:typing', { isTyping: false });

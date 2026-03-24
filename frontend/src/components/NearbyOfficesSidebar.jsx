@@ -30,7 +30,7 @@ const NearbyOfficesSidebar = ({ query, response, location, isOpen, onClose, isLo
 
     const buildOffice = (label, searchName) => ({
       label,
-      mapsSearchUrl: `https://www.google.com/maps/search/${encodeURIComponent(searchName)}/@${lat},${lng},15z`,
+      mapsSearchUrl: `https://www.google.com/maps/search/${encodeURIComponent(searchName)}/@${lat},${lng},13z`,
       directionsUrl: `https://www.google.com/maps/dir/?api=1&origin=${lat},${lng}&destination=${encodeURIComponent(searchName)}&travelmode=driving`,
     });
 
@@ -99,7 +99,7 @@ const NearbyOfficesSidebar = ({ query, response, location, isOpen, onClose, isLo
               </div>
               <div>
                 <h2 className="text-sm font-bold text-text-primary">Nearby Offices</h2>
-                <p className="text-xs text-text-secondary">Get directions instantly</p>
+                <p className="text-xs text-text-secondary">Searching within 10 km radius</p>
               </div>
             </div>
             <button
@@ -119,7 +119,7 @@ const NearbyOfficesSidebar = ({ query, response, location, isOpen, onClose, isLo
                 </div>
                 <p className="text-sm font-medium text-text-primary">Location not enabled</p>
                 <p className="text-xs text-text-secondary leading-relaxed">
-                  Enable your location using the button in the chat to see nearby offices.
+                  Enable your location using the button in the chat to see nearby offices within 10 km.
                 </p>
               </div>
             ) : offices.length === 0 ? (
@@ -129,7 +129,7 @@ const NearbyOfficesSidebar = ({ query, response, location, isOpen, onClose, isLo
                 </div>
                 <p className="text-sm font-semibold text-text-primary">No Nearby Offices</p>
                 <p className="text-xs text-text-secondary leading-relaxed">
-                  Ask a legal question (e.g. community certificate, FIR, property registration) to see relevant offices near you.
+                  Ask a legal question (e.g. community certificate, FIR, property registration) to see relevant offices within 10 km.
                 </p>
                 <div className="mt-2 px-3 py-2 rounded-lg bg-accent/10 border border-accent/20">
                   <p className="text-xs text-accent font-medium">📍 Location is active</p>

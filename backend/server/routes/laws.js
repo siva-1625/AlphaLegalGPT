@@ -14,12 +14,19 @@ dotenv.config({ path: envPath });
 
 const router = express.Router();
 
-// Initialize Gemini with key check
-const apiKey = process.env.GEMINI_API_KEY;
-if (!apiKey) {
-    console.error('❌ Laws API: GEMINI_API_KEY is missing in .env!');
-}
-const genAI = new GoogleGenerativeAI(apiKey || 'missing-key');
+// Initialize Gemini with a function to ensure it always uses the latest key from process.env
+const getGenAI = () => {
+    // Explicitly reload .env with override to ensure any manual changes are picked up immediately
+    dotenv.config({ path: path.resolve(__dirname, '../../.env'), override: true });
+    
+    const apiKey = process.env.GEMINI_API_KEY;
+    if (!apiKey) {
+        console.error('❌ Laws API: GEMINI_API_KEY is missing in .env!');
+    } else {
+        console.log(`🔑 Laws API: Using key starting with: ${apiKey?.slice(0, 10)}... (Reloaded)`);
+    }
+    return new GoogleGenerativeAI(apiKey || 'missing-key');
+};
 
 // Path to the IPC dataset
 const ipcDataPath = path.join(__dirname, '..', 'data', 'ipc_dataset.json');
@@ -44,6 +51,7 @@ const translateLaw = async (law) => {
     const timeoutPromise = new Promise((resolve) => setTimeout(() => resolve(timeoutMsg), 6000));
 
     try {
+        const genAI = getGenAI();
         const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
         const prompt = `
             Translate this Indian legal section to professional Tamil.

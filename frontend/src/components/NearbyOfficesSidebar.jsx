@@ -17,7 +17,7 @@ const OFFICE_ICONS = {
   'Labour Court': '👷',
 };
 
-const NearbyOfficesSidebar = ({ query, response, location, isOpen, onClose, isLocationEnabled }) => {
+const NearbyOfficesSidebar = ({ query, response, location, isOpen, onClose, isLocationEnabled, hasGeneratedResponse }) => {
   const { t } = useTranslation();
 
   // ── Compute offices REACTIVELY from query + AI response ──────────────────
@@ -99,7 +99,7 @@ const NearbyOfficesSidebar = ({ query, response, location, isOpen, onClose, isLo
               </div>
               <div>
                 <h2 className="text-sm font-bold text-text-primary">Nearby Offices</h2>
-                <p className="text-xs text-text-secondary">Searching within 10 km radius</p>
+                <p className="text-xs text-text-secondary">Searching 1m to 10km radius</p>
               </div>
             </div>
             <button
@@ -121,6 +121,22 @@ const NearbyOfficesSidebar = ({ query, response, location, isOpen, onClose, isLo
                 <p className="text-xs text-text-secondary leading-relaxed">
                   Enable your location using the button in the chat to see nearby offices within 10 km.
                 </p>
+              </div>
+            ) : !hasGeneratedResponse ? (
+              <div className="flex flex-col items-center justify-center h-full text-center gap-4 py-10 px-6">
+                <div className="w-16 h-16 rounded-3xl bg-accent/10 flex items-center justify-center text-3xl animate-bounce">
+                  💡
+                </div>
+                <p className="text-sm font-bold text-text-primary">Ready to search!</p>
+                <p className="text-xs text-text-secondary leading-relaxed">
+                  Please ask a legal question first (e.g. Community Certificate, Legal Notice). 
+                </p>
+                <div className="mt-2 p-3 rounded-xl bg-accent/5 border border-accent/20">
+                  <p className="text-[10px] text-accent font-bold uppercase tracking-wider mb-1">How it works:</p>
+                  <p className="text-[11px] text-text-secondary">
+                    Once the assistant responds, the location icon will <b>blink</b>. Click it then to see offices within <b>10 km</b>.
+                  </p>
+                </div>
               </div>
             ) : offices.length === 0 ? (
               <div className="flex flex-col items-center justify-center h-full text-center gap-3 py-10">

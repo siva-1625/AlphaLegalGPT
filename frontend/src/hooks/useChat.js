@@ -34,6 +34,7 @@ export const useChat = () => {
   const [chats, setChats] = useState([]);
   const [currentChatId, setCurrentChatId] = useState(null);
   const [error, setError] = useState(null);
+  const [hasGeneratedResponse, setHasGeneratedResponse] = useState(false);
   
   const lastQueryRef = useRef('');
   const currentChatIdRef = useRef(null);
@@ -110,6 +111,7 @@ export const useChat = () => {
     setCurrentChatId(newId);
     currentChatIdRef.current = newId;
     setMessages([]);
+    setHasGeneratedResponse(false);
     localStorage.setItem(CURRENT_CHAT_KEY, newId);
     return newId;
   }, [CURRENT_CHAT_KEY, saveChats]);
@@ -123,6 +125,7 @@ export const useChat = () => {
       setCurrentChatId(chatId);
       currentChatIdRef.current = chatId;
       setMessages(chat.messages || []);
+      setHasGeneratedResponse(chat.messages?.length > 0);
       localStorage.setItem(CURRENT_CHAT_KEY, chatId);
     }
   }, [chats, CURRENT_CHAT_KEY]);
@@ -198,6 +201,7 @@ export const useChat = () => {
     if (!currentChatIdRef.current) return;
     
     setMessages([]);
+    setHasGeneratedResponse(false);
     setChats(prev => {
       const updated = prev.map(chat => {
         if (chat.id === currentChatIdRef.current) {
@@ -260,6 +264,7 @@ export const useChat = () => {
     };
 
     setMessages(prev => [...prev, userMessage]);
+    setHasGeneratedResponse(false);
     setIsLoading(true);
     setStreamingText('');
     lastQueryRef.current = query;
@@ -330,6 +335,7 @@ export const useChat = () => {
       const targetSessionId = data.sessionId || currentChatIdRef.current;
 
       setMessages(prev => [...prev, aiMessage]);
+      setHasGeneratedResponse(true);
       setStreamingText(''); // Clear streaming text
       setIsLoading(false);
       setIsTyping(false);
@@ -401,6 +407,7 @@ export const useChat = () => {
     isLocationEnabled: isEnabled,
     isLocationLoading: loading,
     toggleLocation,
+    hasGeneratedResponse,
   };
 };
 

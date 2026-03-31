@@ -52,38 +52,5 @@
     "userId": "j1mmp11j9",
     "createdAt": "2026-03-23T05:46:10.994Z",
     "updatedAt": "2026-03-23T05:46:10.994Z"
-  },
-  {
-    "id": "chat_1774334537071_2x3ikm7ud",
-    "title": "What constitutes criminal inti...",
-    "messages": [
-      {
-        "id": "msg_1774334551140",
-        "role": "user",
-        "content": "What constitutes criminal intimidation under IPC 503?",
-        "timestamp": "2026-03-24T06:42:31.140Z"
-      },
-      {
-        "id": "msg_1774334551142",
-        "role": "assistant",
-        "content": "Under the Indian Penal Code (IPC), **Section 503** defines the offense of \"Criminal Intimidation.\"\n\nTo constitute criminal intimidation, the following essential ingredients must be satisfied:\n\n1.  **The Threat:** There must be a threat communicated by one person to another. This threat can be directed toward:\n    *   The person’s body (physical harm);\n    *   The person’s reputation; or\n    *   The person’s property.\n    *   It also includes threats made against the person or reputation of anyone in whom the victim is interested (such as family members).\n\n2.  **The Intent:** The threat must be made with a specific intent:\n    *   To cause **alarm** to the victim; or\n    *   To force the victim to **do an act** which they are not legally bound to do; or\n    *   To force the victim to **omit (stop) doing an act** which they are legally entitled to do, as a means to avoid the execution of the threat.\n\n**Key Points to Note:**\n*   **Alarm:** For the offense to be complete, the threat must be such that it would reasonably cause alarm to the person threatened.\n*   **Punishment:** While Section 503 defines the offense, the punishment is provided under **Section 506** of the IPC. Simple criminal intimidation can lead to imprisonment for up to two years, a fine, or both. If the threat is to cause death, grievous hurt, or destruction of property by fire, the punishment can extend to seven years of imprisonment.\n\n*Note: In the context of the new criminal laws recently implemented in India, the provisions for criminal intimidation are now covered under **Section 351 of the Bharatiya Nyaya Sanhita (BNS)**.*",
-        "timestamp": "2026-03-24T06:42:31.141Z"
-      },
-      {
-        "id": "msg_1774334584986",
-        "role": "user",
-        "content": "how to apply community certificate",
-        "timestamp": "2026-03-24T06:43:04.986Z"
-      },
-      {
-        "id": "msg_1774334584987",
-        "role": "assistant",
-        "content": "In India, a Community Certificate (also known as a Caste Certificate) is a vital legal document that certifies an individual’s belongness to a specific community, especially for those belonging to Scheduled Castes (SC), Scheduled Tribes (ST), or Other Backward Classes (OBC). This certificate is essential for availing benefits such as reservations in educational institutions, government jobs, and various welfare schemes.\n\nThe procedure to apply for a Community Certificate varies slightly from state to state, but generally follows these steps:\n\n### 1. Application Process\nYou can apply for a Community Certificate through both online and offline modes.\n\n*   **Online Mode:** Most states in India provide this service through their official **\"e-District\"** or **\"State Service Portal\"** (e.g., TN e-Seva in Tamil Nadu, MeeSeva in Andhra Pradesh/Telangana, or Sakala in Karnataka).\n*   **Offline Mode:** You can visit the local Revenue Office, such as the **Tehsildar Office**, **Revenue Divisional Officer (RDO)**, or the **Collectorate**.\n\n### 2. General Steps to Apply\n1.  **Obtain the Application Form:** Download it from the state's portal or collect it from the local Tehsildar's office.\n2.  **Fill in Details:** Provide accurate personal details, including name, address, father’s name, and the specific community/caste you are claiming.\n3.  **Submit Documents:** Attach the required proofs (listed below).\n4.  **Verification:** Once the application is submitted, a Revenue Inspector or a Village Administrative Officer (VAO) will conduct a field verification to confirm your community status.\n5.  **Issuance:** After successful verification, the Tehsildar or the designated authority will issue the certificate.\n\n### 3. Required Documents\nGenerally, the following documents are required:\n*   **Identity Proof:** Aadhar Card, Voter ID, or PAN Card.\n*   **Address Proof:** Ration Card, Electricity Bill, or Water Bill.\n*   **Proof of Community:** \n    *   Community Certificate of parents or siblings.\n    *   School Leaving Certificate (TC) mentioning the caste.\n    *   Extract from the Service Register (if parents are government employees).\n*   **Affidavit:** In some cases, a self-declaration or an affidavit on a non-judicial stamp paper might be required.\n*   **Photograph:** Passport-sized photographs.\n\n### 4. Validity\nA Community Certificate is usually valid for a lifetime unless there is a specific change in the law or the status of the community. However, for OBC candidates, a **\"Non-Creamy Layer (NCL)\"** certificate must usually be renewed every financial year for central government purposes.\n\n***\n\n**Finding a nearby office:**\nIf you wish to locate the nearest Tehsildar office or e-Seva center to submit your application, please enable your location using the map icon in the chat input.\n\nNote: Searching for offices within a 10 km radius...\nI can only suggest offices within a 10 km radius of your current location. If you do not enable location sharing, I cannot provide the specific address of the nearest office.",
-        "timestamp": "2026-03-24T06:43:04.986Z"
-      }
-    ],
-    "userId": "ut4qfxa3v",
-    "createdAt": "2026-03-24T06:42:31.143Z",
-    "updatedAt": "2026-03-24T06:43:04.988Z"
   }
 ]

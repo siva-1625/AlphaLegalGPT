@@ -40,6 +40,7 @@ function MainApp() {
     isLocationEnabled,
     isLocationLoading,
     toggleLocation,
+    hasGeneratedResponse,
   } = useChat();
 
   // Detect laws in the current response
@@ -203,6 +204,7 @@ function MainApp() {
           isLocationEnabled={isLocationEnabled}
           isLocationLoading={isLocationLoading}
           onLocationToggle={toggleLocation}
+          hasGeneratedResponse={hasGeneratedResponse}
         />
       </main>
 
@@ -221,6 +223,7 @@ function MainApp() {
         isOpen={isNearbyOpen}
         onClose={() => setIsNearbyOpen(false)}
         isLocationEnabled={isLocationEnabled}
+        hasGeneratedResponse={hasGeneratedResponse}
       />
 
       {/* Error Toast */}

@@ -10,7 +10,7 @@ import {
 } from 'react-icons/fi';
 import { uploadDocument } from '../services/api';
 
-const ChatInput = ({ value: message, onChange: setMessage, onSendMessage, isLoading, disabled, isLocationEnabled, isLocationLoading, onLocationToggle }) => {
+const ChatInput = ({ value: message, onChange: setMessage, onSendMessage, isLoading, disabled, isLocationEnabled, isLocationLoading, onLocationToggle, hasGeneratedResponse }) => {
   const { t, i18n } = useTranslation();
   const textareaRef = useRef(null);
   const fileInputRef = useRef(null);
@@ -224,8 +224,12 @@ const ChatInput = ({ value: message, onChange: setMessage, onSendMessage, isLoad
                 type="button"
                 onClick={onLocationToggle}
                 disabled={disabled || isLocationLoading}
-                className={`p-2.5 rounded-xl transition-colors ${
-                  isLocationEnabled ? 'text-accent bg-accent/10 border border-accent/20' : 'text-text-secondary hover:text-text-primary hover:bg-hover-bg'
+                className={`p-2.5 rounded-xl transition-all duration-500 ${
+                  isLocationEnabled 
+                    ? 'text-accent bg-accent/10 border border-accent/20' 
+                    : hasGeneratedResponse 
+                      ? 'text-accent bg-accent/5 bg-sidebar border border-accent/40 animate-ping-glow shadow-[0_0_15px_rgba(16,163,127,0.3)]'
+                      : 'text-text-secondary hover:text-text-primary hover:bg-hover-bg'
                 } disabled:opacity-40 disabled:cursor-not-allowed`}
                 title={t('locationAccess')}
               >

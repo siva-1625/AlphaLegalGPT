@@ -298,12 +298,15 @@ export const useChat = () => {
     const currentLocation = await getFreshLocation();
     console.log('[sendMessage] location being sent:', currentLocation);
 
+    const isRealtime = localStorage.getItem('realtime') !== 'off';
+
     socket.emit('chat:message', {
       query,
       language: localStorage.getItem('language') || 'en',
       sessionId: sessionId,
       token: sessionStorage.getItem('authToken'),
       location: currentLocation,
+      realtime: isRealtime
     });
   }, [createNewChat, location, isEnabled]);
 

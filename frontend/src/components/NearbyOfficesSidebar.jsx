@@ -15,6 +15,65 @@ const OFFICE_ICONS = {
   'Municipality Office': '🏢',
   'Consumer Court': '🛍️',
   'Labour Court': '👷',
+  'SP Office': '🚔',
+  'Family Court': '👨‍👩‍👧‍👦',
+  'High Court': '🏛️',
+  'Income Tax Office': '💰',
+  'Passport Office': '🛂',
+  'Election Office': '🗳️',
+  'All Women Police Station': '👩‍✈️',
+  'Traffic Police Station': '🚦',
+  'Cyber Crime Police Station': '💻',
+  'Crime Branch (CB-CID)': '🔍',
+  'Railway Police (RPF / GRP)': '🚆',
+  'Special Task Force (STF)': '🔫',
+  'Coastal Security Police': '🚤',
+  'Supreme Court of India': '🏛️',
+  'Sessions Court': '⚖️',
+  'Magistrate Court': '⚖️',
+  'Fast Track Court': '⚡',
+  'Lok Adalat': '🤝',
+  'Legal Services Authority': '📑',
+  'Human Rights Commission': '🕊️',
+  'State Human Rights Commission': '🕊️',
+  'National Commission for Women': '👩',
+  'State Commission for Women': '👩',
+  'Child Welfare Committee (CWC)': '👶',
+  'Juvenile Justice Board (JJB)': '🧒',
+  'Lokpal': '🛡️',
+  'Lokayukta': '🛡️',
+  'Vigilance Commission': '👁️',
+  'Land Survey Office': '🗺️',
+  'Registration Department Office': '📂',
+  'Central Bureau of Investigation (CBI)': '🕵️',
+  'National Investigation Agency (NIA)': '🕵️',
+  'Enforcement Directorate (ED)': '🕵️',
+  'Narcotics Control Bureau (NCB)': '💊',
+  'Directorate of Revenue Intelligence (DRI)': '🧐',
+  'Border Security Force (BSF)': '💂',
+  'Central Reserve Police Force (CRPF)': '👮',
+  'Intelligence Bureau (IB)': '📡',
+  'Research and Analysis Wing (RAW)': '🌍',
+  'National Green Tribunal (NGT)': '🌳',
+  'Income Tax Appellate Tribunal (ITAT)': '💰',
+  'Debt Recovery Tribunal (DRT)': '💸',
+  'Armed Forces Tribunal (AFT)': '🪖',
+  'Central Jail': '⛓️',
+  'Sub Jail': '⛓️',
+  'Women Prison': '⛓️',
+  'Juvenile Home': '🏠',
+  'Notary Public Office': '🖊️',
+  'Advocate / Lawyer Office': '💼',
+  'Public Prosecutor Office': '💼',
+  'Registrar General Office': '📜',
+  'Municipality Office': '🏢',
+  'EB Office / TANGEDCO': '⚡',
+  'Water Board': '🚰',
+  'BDO Office / Panchayat Union': '🏘️',
+  'Agriculture Office': '🚜',
+  'Veterinary Hospital': '🐄',
+  'Primary Health Centre (PHC)': '🏥',
+  'Ration Shop / PDS': '🛒',
 };
 
 const NearbyOfficesSidebar = ({ query, response, location, isOpen, onClose, isLocationEnabled, hasGeneratedResponse }) => {
@@ -35,17 +94,87 @@ const NearbyOfficesSidebar = ({ query, response, location, isOpen, onClose, isLo
     });
 
     const rules = [
-      { label: 'VAO Office', searchName: 'VAO office', kw: ['vao', 'village', 'nativity', 'community', 'income', 'patta', 'chitta', 'land', 'vivasayam', 'jaathi', 'family', 'ration', 'villangam'] },
-      { label: 'Revenue Inspector Office', searchName: 'Revenue Inspector office', kw: ['revenue inspector', 'ri office', 'patta transfer', 'mutation', 'survey', 'surveyor'] },
-      { label: 'Taluk Office', searchName: 'Taluk Office', kw: ['taluk', 'tahsildar', 'thasildar', 'certificate', 'obc', 'mbc', 'sc', 'st', 'bc', 'legal heir', 'domicile', 'certificates'] },
-      { label: 'Sub Registrar Office', searchName: 'Sub Registrar Office', kw: ['sub registrar', 'property', 'sale deed', 'marriage', 'registration', 'encumbrance', 'ec', 'stamp duty', 'registrations'] },
-      { label: 'District Court', searchName: 'District Court', kw: ['district court', 'court', 'case', 'lawsuit', 'bail', 'judge', 'advocate', 'lawyer', 'divorce', 'legal notice', 'litigation', 'justice'] },
-      { label: 'Police Station', searchName: 'Police Station', kw: ['police', 'fir', 'complaint', 'theft', 'robbery', 'accident', 'fraud', 'missing', 'arrest', 'crime', 'pc', 'stations'] },
-      { label: 'District Collectorate', searchName: 'District Collectorate', kw: ['collectorate', 'collector', 'grievance', 'rti', 'relief', 'dm office', 'complaints'] },
-      { label: 'RTO Office', searchName: 'RTO office', kw: ['rto', 'driving licence', 'vehicle', 'registration', 'dl', 'rc book', 'transport', 'license'] },
-      { label: 'Municipality Office', searchName: 'Municipality Office', kw: ['municipality', 'corporation', 'birth certificate', 'death certificate', 'property tax', 'water tax', 'certificate'] },
-      { label: 'Consumer Court', searchName: 'Consumer Court', kw: ['consumer', 'fraud', 'product', 'service', 'compensation', 'complaint', 'grievance'] },
-      { label: 'Labour Court', searchName: 'Labour Court', kw: ['labour', 'worker', 'employment', 'salary', 'pf', 'esi', 'dismissal', 'workers'] },
+      // 🚨 POLICE & INVESTIGATION (MOST SPECIFIC FIRST)
+      { label: 'Cyber Crime Police Station', searchName: 'Cyber Crime Police Station', kw: ['cyber', 'hacked', 'online fraud', 'phishing', 'social media crime', 'scam', 'internet', 'சைபர் கிரைம்'] },
+      { label: 'All Women Police Station', searchName: 'All Women Police Station', kw: ['women police', 'awps', 'dowry', 'domestic violence', 'harrassment', 'molestation', 'female', 'பெண்கள் காவல் நிலையம்', 'வரதட்சணை'] },
+      { label: 'Traffic Police Station', searchName: 'Traffic Police Station', kw: ['traffic', 'accident', 'fine', 'vehicle seizure', 'drink and drive', 'helmet', 'போக்குவரத்து காவல் நிலையம்'] },
+      { label: 'Crime Branch (CB-CID)', searchName: 'CB-CID office', kw: ['cbcid', 'crime branch', 'special investigation', 'cidi', 'சிபிசிஐடி'] },
+      { label: 'Railway Police (RPF / GRP)', searchName: 'Railway Police Station', kw: ['railway police', 'train', 'station', 'rpf', 'grp', 'railway station', 'ரயில்வே போலீஸ்'] },
+      { label: 'Coastal Security Police', searchName: 'Coastal Security Police', kw: ['coastal', 'sea', 'beach', 'boat', 'fisherman', 'coast guard', 'கடலோர பாதுகாப்பு'] },
+      { label: 'Special Task Force (STF)', searchName: 'Special Task Force STF', kw: ['stf', 'special task force', 'naxal', 'smuggling'] },
+      { label: 'Police Station', searchName: 'Police Station', kw: ['police', 'fir', 'complaint', 'theft', 'robbery', 'murder', 'crime', 'pc', 'arrest', 'fight', 'காவல் நிலையம்', 'போலீஸ்'] },
+      { label: 'SP Office', searchName: 'SP Office', kw: ['sp office', 'dsp office', 'superintendent', 'district police', 'murder', 'crime', 'commissioner', 'எஸ்பி அலுவலகம்'] },
+
+      // ⚖️ JUDICIARY & COURTS
+      { label: 'Supreme Court of India', searchName: 'Supreme Court of India', kw: ['supreme court', 'sc', 'delhi court', 'ultimate', 'final appeal', 'உச்ச நீதிமன்றம்'] },
+      { label: 'High Court', searchName: 'High Court', kw: ['high court', 'hc', 'madras high court', 'writ', 'quash', 'stay order', 'anticipatory bail', 'உயர் நீதிமன்றம்'] },
+      { label: 'Family Court', searchName: 'Family Court', kw: ['family court', 'divorce', 'maintenance', 'custody', 'marriage dispute', 'alimony', 'குடும்ப நீதிமன்றம்'] },
+      { label: 'Consumer Court', searchName: 'Consumer Court', kw: ['consumer', 'fraud', 'product', 'service', 'compensation', 'complaint', 'நுகர்வோர் நீதிமன்றம்'] },
+      { label: 'Labour Court', searchName: 'Labour Court', kw: ['labour', 'worker', 'salary', 'pf', 'esi', 'dismissal', 'தொழிலாளர் நீதிமன்றம்'] },
+      { label: 'Sessions Court', searchName: 'Sessions Court', kw: ['sessions court', 'criminal trial', 'serious crime'] },
+      { label: 'Magistrate Court', searchName: 'Magistrate Court', kw: ['magistrate', 'remand', 'bail', 'minor case'] },
+      { label: 'Fast Track Court', searchName: 'Fast Track Court', kw: ['fast track', 'speedy trial'] },
+      { label: 'Lok Adalat', searchName: 'Lok Adalat', kw: ['lok adalat', 'compromise', 'settlement', '🤝'] },
+      { label: 'District Court', searchName: 'District Court', kw: ['district court', 'court', 'court case', 'judge', 'advocate', 'நீதிமன்றம்'] },
+
+      // 🕵️ INVESTIGATION AGENCIES
+      { label: 'Central Bureau of Investigation (CBI)', searchName: 'CBI office', kw: ['cbi', 'central bureau', 'corruption', 'high profile', '🕵️'] },
+      { label: 'National Investigation Agency (NIA)', searchName: 'NIA office', kw: ['nia', 'terrorism', 'national security'] },
+      { label: 'Enforcement Directorate (ED)', searchName: 'Enforcement Directorate office', kw: ['ed', 'money laundering', 'pmla', 'raid', 'fema'] },
+      { label: 'Narcotics Control Bureau (NCB)', searchName: 'NCB office', kw: ['ncb', 'drugs', 'narcotics', 'marijuana', 'ganja', '💊'] },
+      { label: 'Directorate of Revenue Intelligence (DRI)', searchName: 'DRI office', kw: ['dri', 'smuggling', 'customs fraud', 'gold smuggling'] },
+
+      // 🏢 REVENUE & ADMINISTRATION
+      { label: 'VAO Office', searchName: 'VAO office', kw: ['vao', 'village', 'nativity', 'community', 'income', 'patta', 'chitta', 'vivasayam', 'நிலம்', 'பட்டா', 'சிட்டா', 'கிராம நிர்வாக அலுவலர்'] },
+      { label: 'Revenue Inspector Office', searchName: 'Revenue Inspector office', kw: ['revenue inspector', 'ri office', 'survey', 'வருவாய் ஆய்வாளர்'] },
+      { label: 'Taluk Office', searchName: 'Taluk Office', kw: ['taluk', 'tahsildar', 'certificate', 'legal heir', 'ration card', 'family card', 'pension', 'voter id', 'தாலுகா', 'வட்டாட்சியர்', 'வாரிசு சான்றிதழ்', 'ரேஷன் கார்டு'] },
+      { label: 'BDO Office / Panchayat Union', searchName: 'BDO Office Panchayat Union', kw: ['bdo', 'panchayat union', '100 days work', 'mgnrega', 'rural development', 'village drainage', 'street light', 'housing scheme', 'panchayat', 'பஞ்சாயத்து', '100 நாள் வேலை', 'ஊராட்சி'] },
+      { label: 'Agriculture Office', searchName: 'Agriculture Office', kw: ['agriculture', 'farmer', 'vivasaya', 'pm-kisan', 'seeds', 'fertilizer', 'crop insurance', 'horticulture', 'agriculture department', 'விவசாயம்', 'உரம்', 'விதை'] },
+      { label: 'Veterinary Hospital', searchName: 'Veterinary Hospital Dispensary', kw: ['cow', 'goat', 'buffalo', 'livestock', 'animal sickness', 'veterinary', 'cattle', 'கால்நடை மருத்துவம்'] },
+      { label: 'Primary Health Centre (PHC)', searchName: 'Primary Health Centre PHC', kw: ['health', 'phc', 'delivery', 'vaccine', 'doctor', 'medical', 'fever', 'government hospital', 'ஆரம்ப சுகாதார நிலையம்', 'மருத்துவமனை'] },
+      { label: 'Ration Shop / PDS', searchName: 'Ration Shop PDS Center', kw: ['ration shop', 'pds center', 'rice', 'sugar', 'kerosene', 'ration shop issue', 'ரேஷன் கடை', 'ரேஷன் அரிசி'] },
+      { label: 'District Collector Office', searchName: 'District Collector Office', kw: ['collector', 'collectorate', 'grievance', 'district collector', 'petition', 'மாவட்ட ஆட்சியர்', 'கலெக்டர்'] },
+      { label: 'Sub-Registrar Office', searchName: 'Sub Registrar Office', kw: ['sub registrar', 'property', 'sale deed', 'marriage registration', 'encumbrance', 'ec', 'சார்பதிவாளர்'] },
+      { label: 'Land Survey Office', searchName: 'Land Survey Office', kw: ['land survey', 'surveyor', 'map', 'fmb', 'நில அளவை'] },
+      { label: 'Registration Department Office', searchName: 'Registration Department Office', kw: ['registration office', 'stamp duty', 'பதிவுத் துறை'] },
+      { label: 'Municipality Office', searchName: 'Municipality Office', kw: ['municipality', 'corporation', 'birth certificate', 'death certificate', 'property tax', 'water tax', 'water supply', 'street light', 'drainage', 'garbage', 'நகராட்சி', 'மாநகராட்சி', 'தண்ணீர்', 'குப்பை', 'பிறப்பு சான்றிதழ்'] },
+      { label: 'EB Office / TANGEDCO', searchName: 'EB Office TANGEDCO', kw: ['eb office', 'electricity', 'power cut', 'current', 'tangedco', 'meter', 'electricity bill', 'மின்சார வாரியம்', 'மின்சாரம்', 'கரண்ட்'] },
+      { label: 'Water Board', searchName: 'Water Board office', kw: ['water board', 'drinking water', 'sewage', 'metro water', 'twad', 'water supply', 'leakage', 'தண்ணீர் வாரியம்', 'குடிநீர்'] },
+
+      // 🛡️ COMMISSIONS & WELFARE
+      { label: 'Human Rights Commission', searchName: 'Human Rights Commission', kw: ['human rights', 'rights violation', 'police brutality', 'nhrc', 'shrc', 'மனித உரிமைகள்'] },
+      { label: 'National Commission for Women', searchName: 'National Commission for Women', kw: ['women commission', 'ncw', 'women rights'] },
+      { label: 'State Commission for Women', searchName: 'State Commission for Women', kw: ['women commission', 'scw', 'women rights'] },
+      { label: 'Child Welfare Committee (CWC)', searchName: 'Child Welfare Committee CWC', kw: ['cwc', 'child safety', 'orphan', 'child abuse', 'குழந்தை நலக்குழு'] },
+      { label: 'Juvenile Justice Board (JJB)', searchName: 'Juvenile Justice Board JJB', kw: ['jjb', 'juvenile', 'minor crime', 'child offender'] },
+      { label: 'Legal Services Authority', searchName: 'Legal Services Authority', kw: ['legal aid', 'free lawyer', 'nalsa', 'talsa', 'சட்ட உதவி'] },
+      { label: 'Vigilance Commission', searchName: 'Vigilance Commission', kw: ['vigilance', 'anti corruption', 'bribery', 'ஊழல் எதிர்ப்பு'] },
+      { label: 'Lokpal', searchName: 'Lokpal', kw: ['lokpal', 'corruption'] },
+
+      // ⛓️ PRISONS & HOMES
+      { label: 'Central Jail', searchName: 'Central Jail', kw: ['central jail', 'prison', 'jail', 'சிறை'] },
+      { label: 'Sub Jail', searchName: 'Sub Jail', kw: ['sub jail', 'prison'] },
+      { label: 'Women Prison', searchName: 'Women Prison', kw: ['women prison', 'female jail'] },
+      { label: 'Juvenile Home', searchName: 'Juvenile Home', kw: ['juvenile home', 'minor jail', 'observation home'] },
+
+      // 🪖 DEFENSE & SECURITY
+      { label: 'Border Security Force (BSF)', searchName: 'BSF office', kw: ['bsf', 'border security'] },
+      { label: 'Central Reserve Police Force (CRPF)', searchName: 'CRPF office', kw: ['crpf', 'reserve police'] },
+      { label: 'Intelligence Bureau (IB)', searchName: 'Intelligence Bureau IB', kw: ['ib', 'intelligence'] },
+      { label: 'Research and Analysis Wing (RAW)', searchName: 'RAW office', kw: ['raw', 'intelligence'] },
+
+      // 📜 TRIBUNALS & OTHER
+      { label: 'National Green Tribunal (NGT)', searchName: 'National Green Tribunal NGT', kw: ['ngt', 'environment', 'pollution', 'green tribunal'] },
+      { label: 'Income Tax Office', searchName: 'Income Tax office', kw: ['income tax', 'pan', 'taxation', 'it return', 'வருமான வரி'] },
+      { label: 'Income Tax Appellate Tribunal (ITAT)', searchName: 'Income Tax Appellate Tribunal ITAT', kw: ['itat', 'tax appeal'] },
+      { label: 'Debt Recovery Tribunal (DRT)', searchName: 'Debt Recovery Tribunal DRT', kw: ['drt', 'loan recovery', 'bank case'] },
+      { label: 'Armed Forces Tribunal (AFT)', searchName: 'Armed Forces Tribunal AFT', kw: ['aft', 'army court', 'defense court'] },
+      { label: 'Passport Office', searchName: 'Passport Office', kw: ['passport', 'visa', 'கடவுச்சீட்டு'] },
+      { label: 'Election Office', searchName: 'Election office', kw: ['voter id', 'election', 'தேர்தல்'] },
+      { label: 'Notary Public Office', searchName: 'Notary Public', kw: ['notary', 'attestation', 'affidavit', 'நோட்டரி'] },
+      { label: 'Advocate / Lawyer Office', searchName: 'Advocate Office', kw: ['advocate', 'lawyer', 'legal consultation', 'வக்கீல்'] },
+      { label: 'Public Prosecutor Office', searchName: 'Public Prosecutor office', kw: ['public prosecutor', 'government lawyer'] },
+      { label: 'Registrar General Office', searchName: 'Registrar General Court office', kw: ['registrar general', 'court admin'] },
     ];
 
     const matched = [];
@@ -53,29 +182,31 @@ const NearbyOfficesSidebar = ({ query, response, location, isOpen, onClose, isLo
     
     // 1. First, find SPECIFIC match from query/response keywords
     for (const rule of rules) {
-      if (rule.kw.some(k => combinedText.includes(k))) {
+      const match = rule.kw.some(keyword => {
+        // For Tamil characters (non-ASCII), \b word boundary doesn't work well in standard Regex.
+        // We check if the keyword is purely latin/ASCII or contains Tamil.
+        const isTamil = /[^\x00-\x7F]/.test(keyword);
+        
+        if (isTamil) {
+          // Simple include for Tamil as they are usually long enough to prevent accidental partial matches.
+          return combinedText.includes(keyword);
+        } else {
+          // Use word boundaries for English to avoid partial matches ('bc' in 'because', 'ec' in 'section').
+          const escapedKeyword = keyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+          const regex = new RegExp(`\\b${escapedKeyword}\\b`, 'i');
+          return regex.test(combinedText);
+        }
+      });
+
+      if (match) {
         seen.add(rule.label);
         matched.push(buildOffice(rule.label, rule.searchName));
       }
     }
 
-    // 2. IMMEDIATE FEEDBACK: If fewer than 4 offices match, fill with general legal offices
-    // This ensures that clicking the location icon IMMEDIATELY shows directions
-    // without waiting for a question.
-    const defaults = [
-      { label: 'Taluk Office', searchName: 'Taluk Office' },
-      { label: 'Police Station', searchName: 'Police Station' },
-      { label: 'District Court', searchName: 'District Court' },
-      { label: 'VAO Office', searchName: 'VAO office' },
-    ];
-    
-    for (const d of defaults) {
-      if (matched.length >= 4) break;
-      if (!seen.has(d.label)) {
-        seen.add(d.label);
-        matched.push(buildOffice(d.label, d.searchName));
-      }
-    }
+    // 2. Filter logic: NO DEFAULTS. Only show if relevant keywords match.
+    // The user explicitly requested: "unrelated-aa na office la vara koodathu".
+    // "question related-aa na office tha varanum".
 
     return matched.slice(0, 4);
   }, [query, response, location, isLocationEnabled]);

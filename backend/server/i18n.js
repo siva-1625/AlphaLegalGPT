@@ -11,7 +11,7 @@
 const translations = {
   en: {
     // System prompt for Gemini
-    systemPrompt: `You are AttorneyGPT, a helpful AI legal assistant. Based on the following legal context, provide a clear and user-friendly answer to the user's question.`,
+    systemPrompt: `You are AlphaLegalGPT, a helpful AI legal assistant. Based on the following legal context, provide a clear and user-friendly answer to the user's question.`,
     
     // Instructions for response generation
     instructions: `Instructions:

@@ -15,23 +15,29 @@ dotenv.config({ path: envPath });
 const router = express.Router();
 
 // Initialize Gemini with a function to ensure it always uses the latest key from process.env
-const getGenAI = () => {
-    // Explicitly reload .env with override to ensure any manual changes are picked up immediately
+const getApiKey = () => {
     dotenv.config({ path: path.resolve(__dirname, '../../.env'), override: true });
-    
-    const apiKey = process.env.GEMINI_API_KEY;
+    return process.env.GEMINI_API_KEY?.trim();
+};
+
+const getGenAI = () => {
+    const apiKey = getApiKey();
     if (!apiKey) {
         console.error('❌ Laws API: GEMINI_API_KEY is missing in .env!');
     } else {
-        console.log(`🔑 Laws API: Using key starting with: ${apiKey?.slice(0, 10)}... (Reloaded)`);
+        // console.log(`🔑 Laws API: Using key starting with: ${apiKey?.slice(0, 10)}... (Reloaded)`);
     }
     return new GoogleGenerativeAI(apiKey || 'missing-key');
 };
 
-// Path to the IPC dataset
+/**
+ * Path to the IPC dataset
+ */
 const ipcDataPath = path.join(__dirname, '..', 'data', 'ipc_dataset.json');
 
-// Pre-load the dataset
+/**
+ * Pre-load the dataset
+ */
 let ipcData = [];
 try {
     if (fs.existsSync(ipcDataPath)) {
@@ -48,11 +54,11 @@ try {
  */
 const translateLaw = async (law) => {
     const timeoutMsg = 'AI_TIMEOUT';
-    const timeoutPromise = new Promise((resolve) => setTimeout(() => resolve(timeoutMsg), 6000));
+    const timeoutPromise = new Promise((resolve) => setTimeout(() => resolve(timeoutMsg), 10000));
 
     try {
         const genAI = getGenAI();
-        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+        const model = genAI.getGenerativeModel({ model: "gemini-flash-latest" });
         const prompt = `
             Translate this Indian legal section to professional Tamil.
             Keep section ID (e.g. IPC 420) in English.

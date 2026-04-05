@@ -4,8 +4,10 @@ import dotenv from 'dotenv';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
-import { Chat } from '../models/Chat.js';
-import { User } from '../models/User.js';
+import { Chat } from '../data/models/Chat.js';
+import { User } from '../data/models/User.js';
+import { GlobalHistory } from '../data/models/GlobalHistory.js';
+import { LocalSearch } from '../data/search/LocalSearch.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -13,28 +15,33 @@ dotenv.config({ path: join(__dirname, '../../.env') });
 
 const router = express.Router();
 
-const getGenAI = () => {
-  // Explicitly reload .env with override to ensure any manual changes are picked up immediately
+const getApiKey = () => {
   dotenv.config({ path: join(__dirname, '../../.env'), override: true });
-  
-  const apiKey = process.env.GEMINI_API_KEY?.trim();
+  return process.env.GEMINI_API_KEY?.trim();
+};
+
+const getGenAI = () => {
+  const apiKey = getApiKey();
   if (!apiKey) {
     console.error('❌ Chat API: GEMINI_API_KEY is missing in .env!');
   } else {
-    console.log(`🔑 Chat API: Using key starting with: ${apiKey.slice(0, 10)}... (Reloaded)`);
+    // console.log(`🔑 Chat API: Using key starting with: ${apiKey.slice(0, 10)}... (Reloaded)`);
   }
   return new GoogleGenerativeAI(apiKey || '');
 };
 
+const LEGAL_FALLBACK_EN = "I am sorry, but I am an AI Legal Assistant and I can only help with law or legal-related questions.";
+const LEGAL_FALLBACK_TA = "மன்னிக்கவும், நான் ஒரு AI சட்ட உதவியாளர் மற்றும் சட்டம் தொடர்பான கேள்விகளுக்கு மட்டுமே என்னால் உதவ முடியும்.";
+
 const getSystemPrompt = (languageCode, location) => {
-  const isTamil = languageCode === 'ta';
-  // Standardizing to English for the AI expert as per user request
-  const defaultLanguage = "English";
-  const fallbackMessage = "I am sorry, but I am an AI Legal Assistant and I can only help with law or legal-related questions.";
+  const isTamil = languageCode === 'ta' || languageCode === 'tamil';
+  // Dynamic language selection based on user's preference
+  const defaultLanguage = isTamil ? "Tamil" : "English";
+  const fallbackMessage = isTamil ? LEGAL_FALLBACK_TA : LEGAL_FALLBACK_EN;
 
   const distanceConstraint = `
 STRICT CONSTRAINT: You MUST only suggest offices within a 1 meter to 10 km radius. Do NOT provide "long directions" (beyond 10km). If an office is likely further away, inform the user you cannot find any within the 10km limit.
-Always add a note: "Searching for offices within a 10 km radius..." when providing these links.
+Always add a note: "${isTamil ? '10 கி.மீ சுற்றளவுக்குள் அலுவலகங்களைத் தேடுகிறது...' : 'Searching for offices within a 10 km radius...'}" when providing these links.
 `;
 
   let locationContext = "";
@@ -46,16 +53,24 @@ Whenever the user's question relates to a specific government service or legal p
 
 ${distanceConstraint}
 
-Use these search templates (replace {office_name} with the type of office):
-- VAO Office: https://www.google.com/maps/search/VAO+office/@${location.lat},${location.lng},13z
-- Revenue Inspector (RI) Office: https://www.google.com/maps/search/Revenue+Inspector+office/@${location.lat},${location.lng},13z
-- Taluk Office: https://www.google.com/maps/search/Taluk+Office/@${location.lat},${location.lng},13z
-- Sub-Registrar Office: https://www.google.com/maps/search/Sub+Registrar+Office/@${location.lat},${location.lng},13z
-- District Court: https://www.google.com/maps/search/District+Court/@${location.lat},${location.lng},13z
-- Police Station: https://www.google.com/maps/search/Police+Station/@${location.lat},${location.lng},13z
-- District Collectorate: https://www.google.com/maps/search/District+Collectorate/@${location.lat},${location.lng},13z
+- Supreme Court: https://www.google.com/maps/search/Supreme+Court+of+India/@${location.lat},${location.lng},13z
+- High Court: https://www.google.com/maps/search/High+Court/@${location.lat},${location.lng},13z
+- District/Sessions/Magistrate Court: https://www.google.com/maps/search/District+Court/@${location.lat},${location.lng},13z
+- Police Station (AWPS/Traffic/Cyber): https://www.google.com/maps/search/Police+Station/@${location.lat},${location.lng},13z
+- CBI/NIA/ED/NCB: https://www.google.com/maps/search/CBI+office/@${location.lat},${location.lng},13z
+- VAO/RI/Taluk/Collector Office: https://www.google.com/maps/search/Taluk+Office/@${location.lat},${location.lng},13z
+- BDO Office / Panchayat Union: https://www.google.com/maps/search/BDO+Office/@${location.lat},${location.lng},13z
+- Agriculture Office: https://www.google.com/maps/search/Agriculture+Office/@${location.lat},${location.lng},13z
+- Veterinary Hospital: https://www.google.com/maps/search/Veterinary+Hospital/@${location.lat},${location.lng},13z
+- Primary Health Centre (PHC): https://www.google.com/maps/search/PHC+Hospital/@${location.lat},${location.lng},13z
+- Ration Shop / PDS Center: https://www.google.com/maps/search/Ration+Shop/@${location.lat},${location.lng},13z
+- Human Rights/Women Commission: https://www.google.com/maps/search/Human+Rights+Commission/@${location.lat},${location.lng},13z
+- Municipality/Corporation/Water Board: https://www.google.com/maps/search/Municipality+Office/@${location.lat},${location.lng},13z
+- Electricity Board (EB/TANGEDCO): https://www.google.com/maps/search/EB+Office/@${location.lat},${location.lng},13z
 
-Always tell the user: "You can find the nearest [Office Name] within 10 km here: [Link]"
+${isTamil ? 'முக்கியக் குறிப்பு: ஒரு அலுவலகம் 10 கிமீ சுற்றளவுக்கு வெளியே இருந்தால், அதைத் தெளிவாகக் குறிப்பிடவும் (எ.கா. "இந்த அலுவலகம் 10 கிமீ சுற்றளவுக்கு வெளியே உள்ளது").' : 'IMPORTANT: If an office is likely outside the 10km radius (e.g. Supreme Court, High Court, CBI HQ), explicitly mention: "This office is likely outside the 10km radius".'}
+
+Always tell the user: "${isTamil ? 'அருகிலுள்ள [Office Name] ஐ 10 கிமீக்குள் இங்கே காணலாம்: [Link]' : 'You can find the nearest [Office Name] within 10 km here: [Link]'}"
 `;
   } else {
     locationContext = `
@@ -81,27 +96,64 @@ IMPORTANT:
 // POST /api/chat
 router.post('/', async (req, res) => {
   try {
-    const { query, language, location } = req.body;
+    const { query, language, location, realtime } = req.body;
+    const isRealtimeRequest = realtime !== false;
+    const apiKey = getApiKey();
 
     if (!query) {
       return res.status(400).json({ error: 'Query is required' });
     }
 
-    console.log(`Processing AI LegalGPT request: ${query} (Language: ${language})`);
+    console.log(`Processing AI LegalGPT request: ${query} (Language: ${language}, RT: ${isRealtimeRequest}, Key: ${apiKey ? 'Yes' : 'No'})`);
 
-    const genAI = getGenAI();
-    const model = genAI.getGenerativeModel({ model: "gemini-flash-latest" });
-    const fullPrompt = `${getSystemPrompt(language, location)}\n\nUser Question:\n${query}`;
+    let answer = "";
+    let isFromHistory = false;
+    let fallbackUsed = false;
 
-    const result = await model.generateContent(fullPrompt);
-    const response = await result.response;
-    const answer = response.text();
+    // SCENARIO 1: Real-time is ON and API Key exists
+    if (isRealtimeRequest && apiKey) {
+      try {
+        const genAI = getGenAI();
+        const model = genAI.getGenerativeModel({ model: "gemini-flash-latest" });
+        const fullPrompt = `${getSystemPrompt(language, location)}\n\nUser Question:\n${query}`;
+
+        const result = await model.generateContent(fullPrompt);
+        const response = await result.response;
+        answer = response.text();
+        
+        // ONLY Save to Global History (Our "dataset") if it's a valid legal response
+        // Avoid saving "I am a legal AI..." refusals for non-legal questions like "what is java"
+        const isRefusal = answer.includes(LEGAL_FALLBACK_EN) || answer.includes(LEGAL_FALLBACK_TA);
+        if (!isRefusal) {
+          await GlobalHistory.save(query, answer);
+        }
+        
+      } catch (apiError) {
+        console.error('🚫 Gemini API Error (HTTP):', apiError.message);
+        const historyResult = await LocalSearch.search(query, language);
+        answer = historyResult.answer;
+        isFromHistory = historyResult.source === 'History';
+        fallbackUsed = true;
+      }
+    } else {
+        // SCENARIO 2: Real-time is OFF or API Key is missing
+        console.log('ℹ️ Local History Search Mode (RT Off or API Key missing)');
+        const historyResult = await LocalSearch.search(query, language);
+        answer = historyResult.answer;
+        isFromHistory = historyResult.source === 'History';
+        fallbackUsed = true;
+    }
+
+    // Prepare response. If it's a "usual" API response, no prefix.
+    // If it's from history, add the prefix.
+    const finalAnswer = isFromHistory ? `[History Match] ${answer}` : (fallbackUsed ? `[Offline Response] ${answer}` : answer);
 
     res.json({
-      answer,
-      citations: [], // No longer using local RAG, so citations are empty or generated by AI
-      section_title: "",
-      confidence: 1.0
+      answer: finalAnswer,
+      citations: [], 
+      section_title: isFromHistory ? "Previous Insight" : (fallbackUsed ? "Local Matching" : ""),
+      isOffline: fallbackUsed,
+      isFromHistory
     });
 
     // Save to history asynchronously
@@ -202,7 +254,9 @@ export const setupSocketHandlers = (io) => {
     console.log('Client connected:', socket.id);
 
     socket.on('chat:message', async (data) => {
-      const { query, language, sessionId, token, location } = data;
+      const { query, language, sessionId, token, location, realtime } = data;
+      const isRealtimeRequest = realtime !== false;
+      const apiKey = getApiKey(); // Reload fresh every time
 
       let userId = 'anonymous';
       if (token) {
@@ -217,26 +271,58 @@ export const setupSocketHandlers = (io) => {
       try {
         socket.emit('chat:typing', { isTyping: true });
 
-        const genAI = getGenAI();
-        const model = genAI.getGenerativeModel({ model: "gemini-flash-latest" });
-        const fullPrompt = `${getSystemPrompt(language, location)}\n\nUser Question:\n${query}`;
-
-        // Use streaming for better responsiveness
-        const result = await model.generateContentStream(fullPrompt);
-
         let fullResponseText = "";
-        for await (const chunk of result.stream) {
-          const chunkText = chunk.text();
-          fullResponseText += chunkText;
-          socket.emit('chat:stream', { text: chunkText });
+        let isFromHistory = false;
+        let fallbackUsed = false;
+
+        // Try Gemini only if allowed and key exists
+        if (isRealtimeRequest && apiKey) {
+          try {
+            const genAI = getGenAI();
+            const model = genAI.getGenerativeModel({ model: "gemini-flash-latest" });
+            const fullPrompt = `${getSystemPrompt(language, location)}\n\nUser Question:\n${query}`;
+
+            // Use streaming for better responsiveness
+            const result = await model.generateContentStream(fullPrompt);
+
+            for await (const chunk of result.stream) {
+              const chunkText = chunk.text();
+              fullResponseText += chunkText;
+              socket.emit('chat:stream', { text: chunkText });
+            }
+            
+            // ONLY Save to Global History if it's a valid legal response
+            const isRefusal = fullResponseText.includes(LEGAL_FALLBACK_EN) || fullResponseText.includes(LEGAL_FALLBACK_TA);
+            if (!isRefusal) {
+              await GlobalHistory.save(query, fullResponseText);
+            }
+
+          } catch (apiError) {
+            console.error('🚫 Socket Gemini Error:', apiError.message);
+            const historyResult = await LocalSearch.search(query, language);
+            fullResponseText = historyResult.answer;
+            isFromHistory = historyResult.source === 'History';
+            fallbackUsed = true;
+            socket.emit('chat:stream', { text: isFromHistory ? `[History Match] ${fullResponseText}` : `[Offline Response] ${fullResponseText}` });
+          }
+        } else {
+            // Forced history mode
+            const historyResult = await LocalSearch.search(query, language);
+            fullResponseText = historyResult.answer;
+            isFromHistory = historyResult.source === 'History';
+            fallbackUsed = true;
+            socket.emit('chat:stream', { text: isFromHistory ? `[History Match] ${fullResponseText}` : `[Offline Response] ${fullResponseText}` });
         }
 
+        const finalAnswer = isFromHistory ? `[History Match] ${fullResponseText}` : (fallbackUsed ? `[Offline Response] ${fullResponseText}` : fullResponseText);
+
         socket.emit('chat:complete', {
-          answer: fullResponseText,
+          answer: finalAnswer,
           sessionId: sessionId || 'default',
           citations: [],
-          section_title: "",
-          confidence: 1.0,
+          section_title: isFromHistory ? "Previous Insight" : (fallbackUsed ? "Local Matching" : ""),
+          isOffline: fallbackUsed,
+          isFromHistory
         });
 
         // Save to history in background

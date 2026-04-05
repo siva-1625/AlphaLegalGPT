@@ -5,7 +5,7 @@ import Joi from 'joi';
 import dotenv from 'dotenv';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
-import { User } from '../models/User.js';
+import { User } from '../data/models/User.js';
 import nodemailer from 'nodemailer';
 
 const router = express.Router();

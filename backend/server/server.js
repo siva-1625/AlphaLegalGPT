@@ -14,7 +14,7 @@ import chatRoutes, { setupSocketHandlers } from './routes/chat.js';
 import authRoutes from './routes/auth.js';
 import uploadRoutes from './routes/upload.js';
 import lawsRoutes from './routes/laws.js';
-import { User } from './models/User.js';
+import { User } from './data/models/User.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);

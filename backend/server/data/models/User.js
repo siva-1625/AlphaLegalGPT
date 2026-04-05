@@ -6,16 +6,12 @@ import { dirname, join } from 'path';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
-const DATA_PATH = join(__dirname, '../data/users.json');
+// Path is now ../users.json because this file is in data/models/
+const DATA_PATH = join(__dirname, '../users.json');
 
 // Ensure data directory exists
 const ensureDataDir = async () => {
-  const dataDir = join(__dirname, '../data');
-  try {
-    await fs.access(dataDir);
-  } catch {
-    await fs.mkdir(dataDir, { recursive: true });
-  }
+  const dataDir = join(__dirname, '..');
   try {
     await fs.access(DATA_PATH);
   } catch {
@@ -142,4 +138,3 @@ export class User {
     return null;
   }
 }
-
